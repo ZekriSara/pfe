@@ -1,10 +1,162 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Auto-diagnosis</title>
+
+<!-- style links   -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+    <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquert-3.4.1.js"></script>
+    <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+
 </head>
 <body>
+
+
+
+
+    <div class="wrapper">
+
+<!--  NAVBAR    -->
+        <div class="section">
+            <div class="top_navbar">
+
+                <div class="hamburger">
+                    <a href="#">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </div>
+
+                <div class="logo">
+                    <a href="#"> <img src="{% static 'images/uni.png' %}" alt="unidees" style="width:10%;"></a>
+                </div>
+
+            </div>
+        </div>
+
+<!--   SIDEBAR     -->
+        <div class="sidebar">
+<!-- Items-->
+             <ul>
+                <li>
+                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
+                    <ul class="chap-show">
+                        <li>
+                          <a href="#" ><span class="item">Point 1</span></a>
+                        </li>
+                        <li>
+                          <a href="#" ><span class="item">Point 2</span></a>
+                        </li>
+                     </ul>
+                </li>
+            </ul>
+
+
+        </div>
+
+<!--  CONTENUE   -->
+        <div class="content">
+<!--   Background image/color    -->
+           <div class="image"></div>
+
+<!--  CARD/QUESTIONNAIRE     -->
+           <div class="card">
+              <div class="card-body">
+                <div class="card-title">
+                    <h3> <a href="#"> 1.Inventaire et contrôle des biens matériels</a>
+                         <a href="#"> <i class="fa-solid fa-circle-info"></i> </a>
+                    </h3>
+                </div>
+
+                <div class="card-descri">
+                     <h3> 1.1 Utiliser un outil de découverte active</h3>
+                    <p> Utilisez un outil de découverte active pour identifier les appareils connectés au réseau de l'entreprise et mettre à jour l'inventaire des actifs matériels.</p>
+                </div>
+                <div class="card-quizz">
+                    <p style="margin-bottom:15px; font-size: 14px;"> Veuillez séléctionner les options qui sont implémentés dans vôtre entreprise concernant ce point.</p>
+                    <ul>
+                         <li>
+                           <div class="inline-block">
+                             <div class="question">Politique définie</div>
+                             <div class="check">
+                             <label> <input type="radio" id="point1" name="choice-radio"> Yes </label>
+                             <label> <input type="radio" name="choice-radio"> No </label>
+                             </div>
+                             <div class="comment">
+                             <input placeholder="Commentaire" >
+                             </div>
+                           </div>
+                         </li>
+                         <li>
+                           <div class="inline-block">
+                             <div class="question">Contrôle implémenté</div>
+                             <div class="check">
+                             <label> <input type="radio" id="point1" name="choice-radio"> Yes </label>
+                             <label> <input type="radio" name="choice-radio"> No </label>
+                             </div>
+                             <div class="comment">
+                             <input placeholder="Commentaire" " >
+                             </div>
+                           </div>
+                         </li>
+                         <li>
+                           <div class="inline-block">
+                             <div class="question">Contrôle automatisé</div>
+                             <div class="check">
+                             <label> <input type="radio" id="point1" name="choice-radio"> Yes </label>
+                             <label> <input type="radio" name="choice-radio"> No </label>
+                             </div>
+                             <div class="comment">
+                             <input placeholder="Commentaire"  style="position: right;" >
+                             </div>
+                           </div>
+                         </li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                 <a href="#" class="previous round"><i class="fa-solid fa-chevron-left"></i></a>
+                 <a href="#" class="next round"><i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+              </div>
+           </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- Footer -->
+
+
+
+<script>
+    var hamburger = document.querySelector(".hamburger");
+    hamburger.addEventListener("click", function(){
+        document.querySelector("body").classList.toggle("active");
+    })
+
+</script>
+
+<script>
+ $.(.'chap-btn').click(function(){
+   $(.wrapper .sidebar ul .chap-show).toggleClass("show");
+ });
+
+</script>
+
 
 </body>
 </html>

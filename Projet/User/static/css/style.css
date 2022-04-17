@@ -1,0 +1,315 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+*{
+    list-style: none;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body{
+    background: rgb(5, 68, 104);
+}
+
+
+
+/* SIDEBAR */
+.wrapper .sidebar{
+    background: rgb(5, 68, 104);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20%;
+    height: 100%;
+    padding: 20px 0;
+    z-index:1;
+    overflow-y: scroll;
+    scrollbar-color: #8e7ce6 #0d1829;
+}
+
+/* STYLE DU SCROLLBAR */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #829CEA;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(255,0,0,0.4);
+}
+
+/* SIDEBAR ELEMENTS */
+
+.wrapper .sidebar ul li a{
+    display: block;
+    padding: 10px 10px;
+    border-bottom: 1px solid #10558d;
+    color: rgb(241, 237, 237);
+    font-size: 16px;
+    position: relative;
+}
+
+
+.wrapper .sidebar ul ul li a{
+   line-height: 15px;
+   font-size: 15px;
+   padding-left: 20px;
+
+
+}
+
+.wrapper .sidebar ul .chap-show.show{
+display: block;
+}
+
+.wrapper .sidebar ul li a i{
+   position: absolute;
+   top: 50%;
+   right: 20px;
+   transform: translateY(-40%);
+   font-size: 15px;
+
+}
+.wrapper .sidebar ul li a:hover i{
+   transform: translateY(-40%) rotate(-180deg);
+
+}
+
+
+
+.wrapper .sidebar ul li a:hover,
+.wrapper .sidebar ul li a.active{
+    color: #0c7db1;
+    border-left-color: #0c7db1;
+
+    background:white;
+    border-right: 2px solid rgb(5, 68, 104);
+}
+
+
+
+.wrapper .sidebar ul li a:hover:before,
+.wrapper .sidebar ul li a.active:before{
+    display: block;
+}
+
+/*       Navbar            */
+.wrapper .section{
+    width: 80%;
+    margin-left: 20%;
+   /* transition: all 0.5s ease;*/
+}
+
+.wrapper .section .top_navbar{
+    background: rgb(5, 68, 104);
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 0px;
+    border-bottom:3px solid #0f1232;
+    position: relative;
+
+}
+
+.wrapper .section .top_navbar .hamburger a{
+    font-size: 20px;
+    color: #f4fbff;
+    margin-left: 8px;
+
+
+}
+
+.wrapper .section .top_navbar .hamburger a:hover{
+    color: #a2ecff;
+}
+
+
+.wrapper .section .top_navbar .logo a{
+
+    margin-left: 20px;
+    width:10%;
+    height: 100%;
+}
+
+
+/* LES CHANGEMENTS APRES CLICK SUR HAMBURGER */
+body.active .wrapper .sidebar{
+    left: -20%;
+}
+
+body.active .wrapper .section{
+    margin-left: 0;
+    width: 100%;
+}
+
+body.active .wrapper .content .card{
+    margin-left: 25%;
+}
+
+
+
+/* MAIN */
+
+.wrapper .content {
+    margin-top: 0px;
+    margin-left: 0%;
+    width: 100%;
+    height: 100%;
+    z-index:1;
+}
+
+.wrapper .content .image{
+  background:   #C3D2FE /*url('/static/images/bg.jpg') no-repeat */;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+
+  filter: blur(2px);
+}
+
+
+
+/* CARD */
+
+.wrapper .content .card{
+     width: 50%;
+     position: fixed;
+     box-shadow: 2px 2px 20px rgb(5, 68, 104) ;
+     border-radius: 5px;
+     margin-left : 35%;
+     margin-top: 10%;
+     background-color: white;
+    }
+
+.wrapper .content .card .card-body{
+   /*1*/
+  padding: 15px 20px; /*2*/
+  box-sizing: border-box; /*3*/
+
+}
+.card-title, .card-descri, .card-quizz{
+   font-family: 'Playfair Display', serif;
+}
+
+.card-title {
+  text-align:center;
+  text-transform:uppercase;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.card-title a{
+  color: rgb(5, 68, 104);
+}
+
+.card-descri {
+  color: #000000;
+  text-align:center;
+  margin-bottom: 15px;
+}
+
+.card-quizz{
+ text-align:center;
+  margin-top: 30px;
+}
+
+.card-quizz ul li{
+ font-size: 16px;
+ margin-bottom: 15px;
+ border: 1px solid #CFD3DF;
+ border-radius: 10px;
+ padding: 5px;
+ display: block;
+
+}
+
+.card-quizz ul li .inline-block{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+}
+
+.card-quizz ul li .inline-block .question{
+grid-column: 1;
+grid-row: 1;
+}
+.card-quizz ul li .inline-block .yesno{
+grid-column: 2 ;
+grid-row: 1;
+}
+.card-quizz ul li .inline-block .comment{
+grid-column: 3 ;
+grid-row: 1;
+}
+
+
+/* CARD FOOTER */
+.card-footer{
+ margin-top: 20px;
+ text-align: right;
+ margin-right: 30px;
+
+}
+
+.card-footer a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 20px;
+  position: center;
+
+}
+
+.card-footer a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.previous {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+.next {
+  background-color: #829CEA;
+  color: white;
+}
+
+.round {
+  border-radius: 50%;
+}
+
+
+
+form{
+display: inline-block;
+}
+
+.row {
+display: inline-block;
+}
+
+
+input {
+border-radius: 25% 10%;
+border-color: #CFD3DF;
+border-width: 1px;
+border-shadow: 1px;
+border-top: white;
+border-right: white;
+border-left: white;
+}
