@@ -31,9 +31,7 @@
                     </a>
                 </div>
 
-                <div class="logo">
-                    <a href="#"> <img src="{% static 'images/uni.png' %}" alt="unidees" style="width:10%;"></a>
-                </div>
+
 
             </div>
         </div>
@@ -41,7 +39,7 @@
 <!--   SIDEBAR     -->
         <div class="sidebar">
 <!-- Items-->
-             <ul>
+           <ul>
                 <li>
                     <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
                     <ul class="chap-show">
@@ -53,6 +51,7 @@
                         </li>
                      </ul>
                 </li>
+
             </ul>
 
 
@@ -67,13 +66,13 @@
            <div class="card">
               <div class="card-body">
                 <div class="card-title">
-                    <h3> <a href="#"> 1.Inventaire et contrôle des biens matériels</a>
-                         <a href="#"> <i class="fa-solid fa-circle-info"></i> </a>
+                    <h3> <a href="#"> 1.Inventaire et contrôle des biens matériels {{ liste.0 }}</a>
+                         <a href="#"> <abbr title="{{ liste.1 }}Gérer activement (inventorier, suivre et corriger) tous les dispositifs matériels sur le réseau afin que seuls les dispositifs autorisés y aient accès, et que les dispositifs non autorisés et non gérés soient trouvés et empêchés d’y accéder."> <i class="fa-solid fa-circle-info"></abbr></i> </a>
                     </h3>
                 </div>
 
                 <div class="card-descri">
-                     <h3> 1.1 Utiliser un outil de découverte active</h3>
+                     <h3 id="point"> 1.1 Utiliser un outil de découverte active</h3> <br>
                     <p> Utilisez un outil de découverte active pour identifier les appareils connectés au réseau de l'entreprise et mettre à jour l'inventaire des actifs matériels.</p>
                 </div>
                 <div class="card-quizz">
@@ -87,7 +86,7 @@
                              <label> <input type="radio" name="choice-radio"> No </label>
                              </div>
                              <div class="comment">
-                             <input placeholder="Commentaire" >
+                             <input class="custom-search-input" placeholder="Commentaire" >
                              </div>
                            </div>
                          </li>
@@ -99,7 +98,7 @@
                              <label> <input type="radio" name="choice-radio"> No </label>
                              </div>
                              <div class="comment">
-                             <input placeholder="Commentaire" " >
+                             <input class="custom-search-input" placeholder="Commentaire" " >
                              </div>
                            </div>
                          </li>
@@ -111,7 +110,19 @@
                              <label> <input type="radio" name="choice-radio"> No </label>
                              </div>
                              <div class="comment">
-                             <input placeholder="Commentaire"  style="position: right;" >
+                             <input class="custom-search-input" placeholder="Commentaire"  style="position: right;" >
+                             </div>
+                           </div>
+                         </li>
+                        <li>
+                           <div class="inline-block">
+                             <div class="question">Contrôle automatisé</div>
+                             <div class="check">
+                             <label> <input type="radio" id="point1" name="choice-radio"> Yes </label>
+                             <label> <input type="radio" name="choice-radio"> No </label>
+                             </div>
+                             <div class="comment">
+                             <input class="custom-search-input" placeholder="Commentaire"  style="position: right;" >
                              </div>
                            </div>
                          </li>
@@ -147,15 +158,8 @@
     hamburger.addEventListener("click", function(){
         document.querySelector("body").classList.toggle("active");
     })
-
 </script>
 
-<script>
- $.(.'chap-btn').click(function(){
-   $(.wrapper .sidebar ul .chap-show).toggleClass("show");
- });
-
-</script>
 
 
 </body>
