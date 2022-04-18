@@ -17,7 +17,7 @@ body{
 
 /* SIDEBAR */
 .wrapper .sidebar{
-    background: rgb(20,20,20);
+    background: rgb(20,20,20); /* couleur du sidebar */
     position: absolute;
     top: 0;
     left: 0;
@@ -26,12 +26,13 @@ body{
     padding: 20px 0;
     z-index:1;
     overflow-y: scroll;
-    scrollbar-color: #8e7ce6 #0d1829;
+    scrollbar-color: #9aa898 #d5d2d3;
+    transition: all 0.3s ease;
 }
 
 /* STYLE DU SCROLLBAR */
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
 }
 
 /* Track */
@@ -45,11 +46,11 @@ body{
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    background: #829CEA;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background: #c8ccc8;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 }
 ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(255,0,0,0.4);
+    background: #b7b7b7;
 }
 
 /* SIDEBAR ELEMENTS */
@@ -58,7 +59,7 @@ body{
     display: block;
     padding: 10px 10px;
     border-bottom: 1px solid rgb(61,61,61);
-    color: rgb(241, 237, 237);
+    color: #b1cc9f;
     font-size: 16px;
     position: relative;
 }
@@ -68,6 +69,7 @@ body{
    line-height: 15px;
    font-size: 15px;
    padding-left: 20px;
+   color: #c3c3c3;
 
 
 }
@@ -93,11 +95,11 @@ display: block;
 
 .wrapper .sidebar ul li a:hover,
 .wrapper .sidebar ul li a.active{
-    color: #0c7db1;
-    border-left-color: #0c7db1;
+    color: #3e7a3b;
+    border-left-color: #3e7a3b;
 
-    background:white;
-    border-right: 2px solid rgb(5, 68, 104);
+    background: #f0f0f0;
+    border-right: 2px solid  #3e7a3b;
 }
 
 
@@ -111,7 +113,7 @@ display: block;
 .wrapper .section{
     width: 80%;
     margin-left: 20%;
-   /* transition: all 0.5s ease;*/
+   transition: all 0.3s ease;
 }
 
 .wrapper .section .top_navbar{
@@ -120,21 +122,21 @@ display: block;
     display: flex;
     align-items: center;
     padding: 0 0px;
-    border-bottom:3px solid rgb(20,20,20);
+    border-bottom:1px solid rgb(20,20,20);
     position: relative;
 
 }
 
 .wrapper .section .top_navbar .hamburger a{
     font-size: 20px;
-    color: #a7edb4;  /* COULEUR VERT */
+    color: #c3c3c3;
     margin-left: 8px;
 
 
 }
 
 .wrapper .section .top_navbar .hamburger a:hover{
-    color: #a2ecff;
+    color:  #b1cc9f;  /* COULEUR VERT */
 }
 
 
@@ -149,15 +151,17 @@ display: block;
 /* LES CHANGEMENTS APRES CLICK SUR HAMBURGER */
 body.active .wrapper .sidebar{
     left: -20%;
+    transition: all 0.3s ease;
 }
 
 body.active .wrapper .section{
     margin-left: 0;
     width: 100%;
+    transition: all 0.3s ease;
 }
 
 body.active .wrapper .content .card{
-    margin-left: 20%;
+    margin-left: 15%;
 }
 
 
@@ -170,6 +174,7 @@ body.active .wrapper .content .card{
     width: 100%;
     height: 100%;
     z-index:1;
+
 }
 
 .wrapper .content .image{
@@ -178,7 +183,7 @@ body.active .wrapper .content .card{
   width: 100%;
   height: 100%;
   background-size: 100% 100%;
-
+  transition: all 0.3s ease;
   filter: blur(2px);
 }
 
@@ -188,15 +193,17 @@ body.active .wrapper .content .card{
 
 .wrapper .content .card{
      width: 70%;
-
+     height: 80%;
      position: fixed;
      box-shadow: 0px 0px 0px rgb(5, 68, 104) ;
      border-radius: 5px;
      margin-left : 25%;
      margin-top: 50px;
      border: 1px solid rgb(194,194,194);
-
+     transition: all 0.3s ease;
      background-color: rgb(232,232,232);
+     overflow-y: scroll;
+     scrollbar-color: #9aa898 #d5d2d3;
     }
 
 .wrapper .content .card .card-body{
@@ -217,7 +224,13 @@ body.active .wrapper .content .card{
   margin-top: 20px;
 }
 .card-title a{
-  color: rgb(5, 68, 104);
+  color: #3e7a3b;
+}
+
+.point {
+  color: #6ba868;
+  text-align:center;
+  margin-bottom: 15px;
 }
 
 .card-descri {
@@ -270,6 +283,7 @@ grid-row: 1;
  margin-top: 20px;
  text-align: right;
  margin-right: 30px;
+ position: relative;
 
 }
 
@@ -288,12 +302,12 @@ grid-row: 1;
 }
 
 .previous {
-  background-color: #f1f1f1;
+  background-color: #e8e8e8;
   color: black;
 }
 
 .next {
-  background-color: #829CEA;
+  background-color: #6ba868;
   color: white;
 }
 
@@ -315,7 +329,7 @@ display: inline-block;
 .custom-search-input {
 
   border: none;
-  border-bottom: 2px solid #0B0B61;
+  border-bottom: 1px solid rgb(194,194,194);
   background: transparent;
   outline: none;
   padding-bottom: 5px;
@@ -325,7 +339,7 @@ display: inline-block;
 }
 .custom-search-input:focus{
   border: none;
-  border-bottom: 2px solid #0B0B61;
+  border-bottom: 2px solid rgb(194,194,194);
 
 
   background: transparent;
