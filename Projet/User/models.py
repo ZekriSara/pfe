@@ -141,6 +141,16 @@ class Reponse(models.Model):
     id_Sc2=models.ForeignKey(SC_niv2, verbose_name=("Sc_niv2"), on_delete=models.CASCADE,default=None, blank=True, null=True)
     id_Sc3=models.ForeignKey(SC_niv3, verbose_name=("Sc_niv3"), on_delete=models.CASCADE,default=None, blank=True, null=True)
     id_point=models.ForeignKey(Point,verbose_name="Points",on_delete=models.CASCADE)
+    comment=models.TextField(default=None, blank=True, null=True )
     reponse=models.BooleanField()
 
     
+class FileModel(models.Model):
+
+    doc=models.FileField(upload_to='CSVs')
+    #uploaded= models.DateTimeField(auto_now_add=True)
+    
+
+    def __str__(self) -> str:
+    
+        return str(self.doc)

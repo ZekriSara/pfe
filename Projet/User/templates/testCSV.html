@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST CSV</title>
+
+
+
+<!-- style link -->
+     <link rel="stylesheet" type="text/css" href="{% static 'css/file-input.css' %}">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+</head>
+<body>
+    {% if msg %} {% autoescape off %} {{ msg }} {% endautoescape %} {% endif %}
+    <div id="msg"></div>
+    {% csrf_token %}
+    <input type="file" id="file">
+    <label for="file" id="label_input"> 
+        <i class="glyphicon glyphicon-open"></i>
+        &nbsp;Choisissez un fichier
+    </label>
+    <span>
+        <strong>Fichier choisi :</strong>
+        <span id="file-name">Aucun</span>
+    </span>
+    <button id="upload">Upload</button>
+    
+
+
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+
+   <script>
+
+       let inputFile = document.getElementById('file');
+       let FileNameField = document.getElementById('file-name');
+       let upload_button = document.getElementById('upload');
+       inputFile.addEventListener('change',function(){
+           let uploadedFileName = event.target.files[0].name;
+           FileNameField.textContent=uploadedFileName;
+           
+       })
+       
+   </script>
+   
+   <script type="text/javascript">
+    $(document).ready(function (e) {
+        $('#upload').on('click', function () {
+            var form_data = new FormData();
+            var count = document.getElementById('file').files.length;
+            
+            if(count == 0) {
+                $('#msg').html('<span style="color:red">Select a file</span>');
+                return;
+            }
+            upload.innerHTML = 'Uploading...';
+            
+            form_data.append("file", $("input[id^='file']")[0].files[0]);
+
+            csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+           
+            //console.log(csrf_token);
+            
+            
+            form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+
+           /* var xhr = new XMLHttpRequest();
+            xhr.open('POST', '../upload/', true);
+            xhr.send(form_data);*/
+            setTimeout(function(){
+                upload.innerHTML = 'Upload';
+            },1000);
+           
+            
+            
+            
+            $.ajax({
+                url: "../upload/", // point to server-side URL
+                //dataType: 'json', // what to expect back from server
+                //cache: false,
+                contentType: false,
+                processData: false,
+                mimeType: "multipart/form-data",
+                //data: {'data': form_data, 'csrfmiddlewaretoken': csrf_token},
+                data: form_data,
+                method: "POST",
+                success: function (response) { // display success response
+                   // $('#msg').html(response.msg);
+                   console.log(res)
+                },
+                /*error: function (response) {
+                    $('#msg').html(response.message); // display error response
+                }*/
+            });
+        });
+    });
+    </script>
+</body>
+</html>
