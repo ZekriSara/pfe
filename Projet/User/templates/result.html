@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/unilogo.png' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/resultpage.css' %}">
+
+    <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquert-3.4.1.js"></script>
+
+    <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+
+</head>
+<body>
+
+<div class="wrapper">
+<div class="chart">
+  <canvas id="chartRadar" width="200"></canvas>
+</div>
+</div>
+
+
+<script>
+Chart.defaults.global.legend.display = false;
+Chart.defaults.global.defaultFontColor = 'rgba(156,63,74, 1)';
+
+var chartRadarDOM = $('#chartRadar');
+var chartRadarData = {
+  labels: ["Vitality", "Magic Power", "Dexterity", "Parry", "Skill Power", "Accuracy", "Luck"],
+  datasets: [{
+    label: "Skill Level",
+    backgroundColor: "rgba(156,63,74,.5)",
+    borderColor: "rgba(156,63,74,.8)",
+    pointBackgroundColor: "rgba(156,63,74,1)",
+    pointBorderColor: "#fff",
+    pointHoverBackgroundColor: "#fff",
+    pointHoverBorderColor: "rgba(156,63,74,1)",
+    pointBorderWidth: 2,
+    data: [9, 7, 6, 5, 10, 9, 8]
+  }]
+};
+var chartRadarOptions = {
+  scale: {
+    ticks: {
+      beginAtZero: true,
+      maxTicksLimit: 6
+    },
+    pointLabels: {
+      fontSize: 12
+    },
+    gridLines: {
+      color: 'rgba(156,63,74,.1)'
+    }
+  }
+
+};
+var chartRadar = new Chart(chartRadarDOM, {
+  type: 'radar',
+  data: chartRadarData,
+  options: chartRadarOptions
+});
+
+
+</script>
+</body>
+</html>
