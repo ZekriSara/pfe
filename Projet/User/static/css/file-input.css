@@ -1,0 +1,32 @@
+input#file{
+  display:none;
+  
+}
+
+input#file + label {
+    background-color:aquamarine;
+    padding:8px;
+    color:black;
+    border:2px solid aqua;
+    border-radius:9px;
+    margin-left:20px;
+}
+
+input#file + label:hover{
+    background-color: #26d397;
+    background-color: #26ffb3;
+    cursor:pointer;
+}
+#upload{
+    
+    background-color:aquamarine;
+    padding:8px;
+    color:black;
+    border:2px solid aqua;
+    border-radius:9px;  
+}
+#upload:hover{
+    background-color: #26d397;
+    background-color: #26ffb3;
+    cursor:pointer;
+}
