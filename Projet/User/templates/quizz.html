@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Auto-diagnosis</title>
+      <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/unilogo.png' %}"/>
 
 <!-- style links   -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
@@ -21,231 +22,101 @@
 
     <div class="wrapper">
 
-<!--  NAVBAR    -->
-        <div class="section">
-            <div class="top_navbar">
 
-                <div class="hamburger">
-                    <a href="#">
+
+            <div class="hamburger">
+                <a href="#">
                         <i class="fas fa-bars"></i>
                     </a>
-                </div>
-
-
-
             </div>
-        </div>
+
+
+
+
+
 
 <!--   SIDEBAR     -->
-        <div class="sidebar">
+        <nav id="sidebar" class="sidebar">
 <!-- Items-->
+
+         <div class="sidebar-menu">
            <ul>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-                <li>
-                    <a href="#"  class="chap-btn">Chapitre 1<i class="fa-solid fa-circle-chevron-down first"></i></a>
-                    <ul class="chap-show">
-                        <li>
-                          <a href="#" ><span class="item">Point 1</span></a>
-                        </li>
-                        <li>
-                          <a href="#" ><span class="item">Point 2</span></a>
-                        </li>
-                     </ul>
-                </li>
-
-            </ul>
+               {% for c in chapitres %}
+            <li class="sidebar-dropdown">
+              <a href="#" >{{ chapitres.0.titre }} </a>
 
 
-        </div>
+                <div class="sidebar-submenu">
+                  <ul>
+                      {% for p in points %}
+                       <li><a href="#" class=""><span class="item">{{ p.titre }}</span></a></li>
+                      {% endfor %}
+                  </ul>
+                </div>
+
+            </li>
+
+               {% endfor %}
+           </ul>
+         </div>
+
+        </nav>
+
+
 
 <!--  CONTENUE   -->
         <div class="content">
 <!--   Background image/color    -->
 
-           <div class="image"></div>
+
 
 <!--  CARD/QUESTIONNAIRE     -->
-           <div class="card">
+
+
+           <div class="card" id="output">
               <div class="card-body">
-                <div class="card-title">
-                    <h1> <a href="#"> Inventaire et contrôle des biens matériels {{ liste.0 }}</a>
-                         <a href="#"> <abbr title="{{ liste.1 }}Gérer activement (inventorier, suivre et corriger) tous les dispositifs matériels sur le réseau afin que seuls les dispositifs autorisés y aient accès, et que les dispositifs non autorisés et non gérés soient trouvés et empêchés d’y accéder."> &nbsp; <i class="fa-solid fa-circle-info" style="font-size:20px;"></abbr></i> </a>
+                <div class="card-title" id="msg">
+                    <h1> <a href="#"> {{ chapitres.0.titre }}</a>
+                         <a href="#"> <abbr title="{{ chapitres.0.descriptif}}"> &nbsp; <i class="fa-solid fa-circle-info" style="font-size:20px;"></i> </abbr></i> </a>
                     </h1>
                 </div>
-                <div class="point">
-                    <p> 1 Utiliser un outil de découverte active</p>
+                <div class="point" id="point_titre">
+                    <p> {{ points.0.titre }}</p>
                 </div>
-                <div class="card-descri">
-                    <p> Utilisez un outil de découverte active pour identifier les appareils connectés au réseau de l'entreprise et mettre à jour l'inventaire des actifs matériels.</p>
+                <div class="card-descri" id="point_descri" >
+                    <p> {{ points.0.point }} </p>
                 </div>
                 <div class="card-quizz">
-                    <p style="margin-bottom:20px; font-size: 14px;"> Veuillez séléctionner les options qui sont implémentés dans vôtre entreprise concernant ce point.</p>
-                    <ul>
+                    <ul id="questions">
+
+                        {% for q in questions %}
                          <li>
                            <div class="inline-block">
-                             <div class="question">Politique définie</div>
+                             <div class="question">{{ q.question }}</div>
                              <div class="check">
-                             <label> <input type="radio" id="point1" name="choice-radio"> Oui </label> &nbsp;&nbsp;
-                             <label> <input type="radio" name="choice-radio"> Non </label>
+                             <label> <input type="radio" id="{{q.id_qst}}_oui" name="choice-radio{{forloop.counter}}" value="{{points.0.id_point}}/{{q.id_qst}}/oui"> Oui </label> &nbsp;&nbsp;
+                             <label> <input type="radio" id="{{q.id_qst}}_non" name="choice-radio{{forloop.counter}}" value="{{points.0.id_point}}/{{q.id_qst}}/non"> Non </label>
                              </div>
                              <div class="comment">
-                             <input class="custom-search-input" placeholder="Commentaire" >
+                             <input class="custom-search-input"  id="com{{forloop.counter}}" placeholder="com{{forloop.counter}}" >
                              </div>
                            </div>
                          </li>
-                         <li>
-                           <div class="inline-block">
-                             <div class="question">Contrôle implémenté</div>
-                             <div class="check">
-                             <label> <input type="radio" id="point1" name="choice-radio"> Oui </label>  &nbsp;&nbsp;
-                             <label> <input type="radio" name="choice-radio"> Non </label>
-                             </div>
-                             <div class="comment">
-                             <input class="custom-search-input" placeholder="Commentaire" " >
-                             </div>
-                           </div>
-                         </li>
-                         <li>
-                           <div class="inline-block">
-                             <div class="question">Contrôle automatisé</div>
-                             <div class="check">
-                             <label> <input type="radio" id="point1" name="choice-radio"> Oui </label>  &nbsp;&nbsp;
-                             <label> <input type="radio" name="choice-radio"> Non </label>
-                             </div>
-                             <div class="comment">
-                             <input class="custom-search-input" placeholder="Commentaire"  style="position: right;" >
-                             </div>
-                           </div>
-                         </li>
-                        <li>
-                           <div class="inline-block">
-                             <div class="question">Contrôle automatisé</div>
-                             <div class="check">
-                             <label> <input type="radio" id="point4" name="choice-radio"> Oui </label>  &nbsp;&nbsp;
-                             <label> <input type="radio" name="choice-radio"> Non </label>
-                             </div>
-                             <div class="comment">
-                             <input class="custom-search-input" placeholder="Commentaire"  style="position: right;" >
-                             </div>
-                           </div>
-                         </li>
+                        {% endfor %}
                     </ul>
+
                 </div>
-                <div class="card-footer">
-                 <a href="#" class="previous round"><i class="fa-solid fa-chevron-left"></i></a>
-                 <a href="#" class="next round"><i class="fa-solid fa-chevron-right"></i></a>
-                </div>
+
               </div>
+               <div class="card-footer">
+                 <a href="#" id="previous" class="previous round"><i class="fa-solid fa-chevron-left"></i></a>
+                 <a href="#" id="next" class="next round"><i class="fa-solid fa-chevron-right"></i></a>
+
+            <div id="point" data-value="{{ points.0.id_point }}">  </div>
+            <div id="nb_qst" data-value="{{ i }}"></div>
+                </div>
            </div>
+
 
         </div>
 
@@ -264,21 +135,80 @@
 <!-- Footer -->
 
 
-
-<script>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
     var hamburger = document.querySelector(".hamburger");
     hamburger.addEventListener("click", function(){
         document.querySelector("body").classList.toggle("active");
     })
 </script>
-
-<script>
-    var ajax_next= {};
-
-
-</script>
+   <script type="text/javascript">
+    var next = document.querySelector(".next");
+    next.addEventListener("click", function(){
 
 
+        var size= document.getElementById("nb_qst").getAttribute('data-value');
+        var point=document.getElementById("point").getAttribute('data-value');
+
+        var com= [];
+        var rep = [];
+        for(let i=1; i<=size; i++) {
+         rep.push($("input[type='radio'][name='choice-radio"+i+"']:checked").val());
+         com.push(document.getElementById("com"+i).value);
+        }
+
+        var el=document.getElementById("questions");
+         /* el.textContent=rep; */
+
+
+              $.ajax({
+                type : 'GET',
+                url : "../ajax/",
+                dataType:'json',
+                data : {
+                  'point':point,
+                },
+                success:function(response){
+                if (response.end==0){
+                document.getElementById("questions").innerHTML=response.quizz;
+                document.getElementById("point_titre").textContent=response.point;
+                document.getElementById("point_descri").textContent=response.point_descri;
+                document.getElementById("point").setAttribute('data-value',response.id);
+                }
+                else {
+                alert("end");
+                }
+
+
+                },
+
+                error:function(jqXHR, textStatus, errorThrown){
+                     var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        $('#post').html(msg);
+                  alert(msg);
+
+                }
+              });
+              return false;
+    })
+
+    </script>
 
 </body>
 </html>

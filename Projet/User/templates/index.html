@@ -1,10 +1,252 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/unilogo.png' %}"/>
+  <meta name="theme-color" content="#1885ed">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
+    <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquert-3.4.1.js"></script>
+    <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+  <title>Acceuil</title>
+
 </head>
 <body>
+
+  <div class='popup'>
+        <div class='cnt223'>
+
+          <p><a href='#' class='close'><i class='fa-solid fa-xmark'></i></a></p>
+          <h1>Choisissez la norme</h1>
+          <ul>
+          {% for n in normes %}
+          <li>
+            <a href="/home/quizz/{{n.id}}"> {{ n.titre }} </a>
+
+          </li>
+
+
+          {% endfor %}
+          </ul>
+
+        </div>
+  </div>
+<header class="header">
+  <div class="container header__container">
+<div class="header__logo"><img class="header__img" src="{% static 'images/unilogo.png' %}"> <h1 class="header__title">UNID<span class="header__light">EES</span></h1></div>
+
+
+  <div class="header__menu">
+    <nav id="navbar" class="header__nav collapse">
+      <ul class="header__elenco">
+        <li class="header__el"><a href="#" class="header__link">Acceuil</a></li>
+        <li class="header__el"><a href="#" class="header__link">Résultats</a></li>
+
+        <li class="header__el"><a href="#" class="header__link">Contactez-nous</a></li>
+        <li class="header__el header__el--blue"><a href="" class="btn btn--white">User Name</a></li>
+      </ul>
+    </nav>
+  </div>
+    </div>
+</header>
+
+<div class="sect sect--padding-top">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+    <div class="site">
+      <h1 class="site__title">Auto-évaluation de la conformité de votre entreprise</h1>
+      <h2 class="site__subtitle">Passez votre test dès maintenant!</h2>
+      <div class="site__box-link">
+        <a class="btn btn--width" id="cl" href="#">Commencer</a>
+
+
+
+        <a class="btn btn--revert btn--width" href="">Reprendre</a>
+      </div>
+      <img class="site__img" src="{% static 'images/test.svg' %}">
+    </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div class="sect sect--padding-bottom">
+<div class="container">
+<div class="row row--center">
+  <h1 class="row__title">
+    Avantages
+  </h1>
+  <h2 class="row__sub">Pourquoi est t-il important de faire le test?</h2>
+</div>
+<div class="row row--center row--margin">
+  <div class="col-md-4 col-sm-4 price-box price-box--purple">
+    <div class="price-box__wrap">
+      <div class="price-box__img"></div>
+      <h1 class="price-box__title">
+        Conformité
+      </h1>
+      <p class="price-box__people">
+
+      </p>
+    <!--  <h2 class="price-box__discount">
+        <span class="price-box__dollar">$</span>49<span class="price-box__discount--light">/mo</span>
+      </h2>
+      <h3 class="price-box__price">
+        $65/mo
+      </h3>
+      <p class="price-box__feat">
+        Features
+      </p> -->
+      <ul class="price-box__list">
+        <li class="price-box__list-el">Point</li>
+        <li class="price-box__list-el">Point</li>
+        <li class="price-box__list-el">Point</li>
+        <li class="price-box__list-el">Point</li>
+      </ul>
+
+       <div>
+      <a class="btn btn--purple btn--width">Passer le test</a>
+    </div>
+  </div>
+  </div>
+  <!-- second -->
+
+
+<!-- terzo -->
+
+
+
+
+</div>
+</div>
+</div>
+
+
+<div class="sect sect--white">
+<div class="container">
+<div class="row">
+  <h1 class="row__title">
+    Commentaire
+  </h1>
+  <h2 class="row__sub">Ce que pense le DG <span class="row__sub--light">MEHDI ZAKARIA</span> de la veille  réglementaire et normative</h2>
+</div>
+<div class="row row--margin row--text-center">
+  <div class="col-md-8 col-sm-10 col-xs-12 row__carousel">
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+  </ol>-->
+
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner">
+    <div class="item active">
+      <div class="item__content">
+      <img class="item__img" src="https://cdn.worldvectorlogo.com/logos/slack-1.svg" alt="Slack"><span class="item__name">Commentaire</span>
+      <p class="item__description">
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+      </p>
+        </div>
+      <!-- <div class="item__avatar"></div> -->
+      <br><br>
+      <p class="item__people">MEHDI ZAKARIA</p>
+  <p class="item__occupation">DG d'Unidees</p>
+    </div>
+
+ <!--items       <div class="item">
+      <div class="item__content">
+      <img class="item__img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Google-favicon-2015.png/150px-Google-favicon-2015.png" alt="Google"><span class="item__name">google</span>
+      <p class="item__description">
+         Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+      </p>
+        </div>
+      <div class="item__avatar"></div>
+     <p class="item__people">Mary Tompson</p>
+  <p class="item__occupation">Ceo of Dribbble</a>
+    </div>
+
+<div class="item">
+      <div class="item__content">
+      <img class="item__img" src="https://www.hrexaminer.com/wp-content/uploads/2016/10/2016-10-11-hrexaminer-stackoverflow-6-xxl-sq-250px.png" alt="Stackoverflow"><span class="item__name">stackoverflow</span>
+      <p class="item__description">
+          Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+      </p>
+        </div>
+      <div class="item__avatar"></div>
+      <p class="item__people">Andrew Palmer</p>
+  <p class="item__occupation">Ceo of Slack</a>
+    </div>
+
+  </div>
+-->
+  <!-- Left and right controls -->
+
+</div>
+
+  </div>
+
+
+
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2 col-xs-6">
+       <img class="footer__img" src="{% static 'images/unilogo.png' %}"> <h1 class="footer__title">UNID<span class="footer__light">EES</span></h1></div>
+
+    </div>
+  </div>
+</footer> </div>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script>
+
+document.getElementById("cl").addEventListener("click", function(){
+
+  var overlay = $('<div id="overlay">   </div>');
+  overlay.show();
+
+  overlay.appendTo(document.body);
+
+  document.querySelector("body").classList.toggle("active");
+  $('.popup').show();
+
+ $('.close').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+$('.x').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+});
+
+$(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+</script>
 
 </body>
 </html>

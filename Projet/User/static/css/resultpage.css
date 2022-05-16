@@ -1,0 +1,30 @@
+//colors
+$color-brand: #9c3f4a;
+$color-brand-light: lighten($color-brand, 20%);
+$color-brand-dark: darken($color-brand, 20%);
+$color-accent: #b0bb91;
+$color-accent-light: lighten($color-accent, 20%);
+$color-accent-dark: darken($color-accent, 20%);
+$color-grey: #dbdad5;
+$color-grey-light: lighten($color-grey, 20%);
+$color-grey-dark: darken($color-grey, 20%);
+$color-charcoal: #2b2b2b;
+$color-offwhite: #fdfdfd;
+//typography
+$base-font-family: "Khula", Helvetica, Arial, sans-serif;
+$code-font-family: "Noto Serif", Helvetica, Arial, sans-serif;
+$base-font-size: 16px;
+$base-font-weight: 400;
+$small-font-size: $base-font-size * 0.875;
+$base-line-height: 1.5;
+$spacing-unit: 30px;
+
+
+body {
+  background-color: $color-offwhite;
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+}
+.chart {
+  padding: $spacing-unit;
+}
