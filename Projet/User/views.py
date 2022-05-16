@@ -1,10 +1,9 @@
-<<<<<<< HEAD
+
 from django.http import JsonResponse
 
 from .models import Norme, Chapitre, Point, Question_Generale
-=======
+
 import codecs
->>>>>>> a85016fe155dd3acb43b32c33f324f3b77484163
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -26,8 +25,6 @@ def index(request):
     }
     return render(request, "index.html",context)
 
-
-<<<<<<< HEAD
 def quizz(request,id):
     normes = Norme.objects.all()
     points = Point.objects.all()
@@ -107,12 +104,9 @@ def maj(request):
             'end':end
             }
     return JsonResponse(data)
-=======
-def quizz(request):
-    liste = ["chapitre", "descri chapitre", "point", "descri point", "question1", "question2", "question3"]
-    context = {'liste': liste}
-    print(dir(liste))
-    return render(request, "quizz.html",context)
+
+
+
 
 def csv(request):
     
@@ -183,4 +177,4 @@ def upload_data2(request):
             else :
                 print(row)
                 return render(request, 'files_upload.html', )
->>>>>>> a85016fe155dd3acb43b32c33f324f3b77484163
+

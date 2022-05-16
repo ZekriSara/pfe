@@ -142,7 +142,7 @@
     hamburger.addEventListener("click", function(){
         document.querySelector("body").classList.toggle("active");
     })
-</script>
+   </script>
    <script type="text/javascript">
     var next = document.querySelector(".next");
     next.addEventListener("click", function(){
@@ -170,6 +170,7 @@
                   'point':point,
                 },
                 success:function(response){
+
                 if (response.end==0){
                 document.getElementById("questions").innerHTML=response.quizz;
                 document.getElementById("point_titre").textContent=response.point;
@@ -184,6 +185,7 @@
                 },
 
                 error:function(jqXHR, textStatus, errorThrown){
+
                      var msg = '';
         if (jqXHR.status === 0) {
             msg = 'Not connect.\n Verify Network.';
