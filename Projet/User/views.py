@@ -1,11 +1,9 @@
 
-from django.http import JsonResponse
-
 from .models import Norme, Chapitre, Point, Question_Generale
 
 import codecs
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.core.files.storage import FileSystemStorage
 from pprint import pprint
@@ -44,12 +42,13 @@ def quizz(request,id):
 def resultat(request):
     return render(request,"result.html")
 
-
+def maj2(request):
+    x="essai"
+    return JsonResponse({'x':x})
 
 
 
 def maj(request):
-
 ######Récupération et incrémentation
     point_id = request.GET.get('point')
     p = point_id.split('_')
@@ -86,23 +85,25 @@ def maj(request):
                    '</li>')
             quizz = quizz+rep
             i=i+1
+        data = {'quizz': quizz,
+                'point': point_actu.titre,
+                'point_descri': point_actu.point,
+                'id': point_actu.id_point,
+                'end': end
+                }
     else:
-        incr = int(p[taille - 2])
-        incr = incr + 1
-        incr=str(incr)
-        id_chap = p[0] + "_" + incr
-        if Chapitre.objects.filter(id_chap=id_chap).exists():
-            id = "yes"
-        else:
-            quizz=""
-            end=1
 
-    data = {'quizz': quizz,
-            'point': point_actu.titre,
-            'point_descri':point_actu.point,
-            'id':point_actu.id_point,
-            'end':end
-            }
+        id_chap = "cis_01"
+        if Chapitre.objects.filter(id_chap=id_chap).exists():
+            end = 1
+            data={"end":end}
+            return JsonResponse(data)
+        else:
+            end = 2
+            data = {"end": end}
+            return JsonResponse(data)
+
+
     return JsonResponse(data)
 
 
@@ -138,8 +139,8 @@ def upload_files(request):
     if request.method == 'POST':
         files = request.FILES.getlist('files[]', None)
         #print(files)
-        for f in files:
-            handle_uploaded_file(f)
+        #for f in files:
+            #handle_uploaded_file(f)
         return JsonResponse({'msg':'<span style="color: green;">File successfully uploaded</span>'})
     else:
         return render(request, 'files_upload.html', )

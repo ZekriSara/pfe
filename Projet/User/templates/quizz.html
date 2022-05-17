@@ -11,8 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 
     <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquert-3.4.1.js"></script>
-    <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+
 
 </head>
 <body>
@@ -132,9 +131,7 @@
 
 
 
-<!-- Footer -->
-
-
+   <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script>
@@ -164,7 +161,7 @@
 
               $.ajax({
                 type : 'GET',
-                url : "../ajax/",
+                url : "../../ajax/",
                 dataType:'json',
                 data : {
                   'point':point,
@@ -178,7 +175,10 @@
                 document.getElementById("point").setAttribute('data-value',response.id);
                 }
                 else {
-                alert("end");
+
+                if(response.end==1){alert(response.end);}
+                else {alert(response.end);}
+
                 }
 
 
