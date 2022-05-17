@@ -132,6 +132,10 @@ class Question_Generale(models.Model):
 
 
 class Reponse(models.Model):
+<<<<<<< HEAD
+
+=======
+>>>>>>> 7f8e69fb1d58ff63326dfe9695453f98ec2930f1
     id_reponse=models.TextField(primary_key=True)
     id_test=models.ForeignKey(Test,verbose_name="Tests",on_delete=models.CASCADE)
     id_qst=models.ForeignKey(Question_Generale,verbose_name="Questions_Generales",on_delete=models.CASCADE)
