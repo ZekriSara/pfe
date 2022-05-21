@@ -1,0 +1,1 @@
+CIS_01;CIS_01_01;Inventaire et contrôle des biens matériels;Gérer activement (inventorier, suivre et corriger) tous les dispositifs matériels sur le réseau afin que seuls les dispositifs autorisés y aient accès, et que les dispositifs non autorisés et non gérés soient trouvés et empêchés d’y accéder.;cis;1

@@ -82,6 +82,7 @@ class SC_niv3(models.Model):
 
 
 class Point(models.Model):
+    id_point = models.TextField(primary_key=True, default="default-id")
     id_norme = models.ForeignKey(Norme, verbose_name=("Normes"), on_delete=models.CASCADE)
     version = models.IntegerField()
     id_chap = models.ForeignKey(Chapitre, verbose_name="Chapitres", on_delete=models.CASCADE)
@@ -91,7 +92,6 @@ class Point(models.Model):
                                null=True)
     id_Sc3 = models.ForeignKey(SC_niv3, verbose_name=("Sc_niv3"), on_delete=models.CASCADE, default=None, blank=True,
                                null=True)
-    id_point = models.TextField(primary_key=True, default="default-id")
     titre = models.TextField(default=None, blank=True, null=True)
     point = models.TextField()
     type_actif = models.TextField(default=None, blank=True, null=True)
@@ -132,21 +132,16 @@ class Question_Generale(models.Model):
 
 
 class Reponse(models.Model):
-<<<<<<< HEAD
-
-=======
->>>>>>> 7f8e69fb1d58ff63326dfe9695453f98ec2930f1
     id_reponse=models.TextField(primary_key=True)
     id_test=models.ForeignKey(Test,verbose_name="Tests",on_delete=models.CASCADE)
     id_qst=models.ForeignKey(Question_Generale,verbose_name="Questions_Generales",on_delete=models.CASCADE)
-    id_norme=models.ForeignKey(Norme, verbose_name=("Normes"), on_delete=models.CASCADE)
     version=models.IntegerField()
     id_chap=models.ForeignKey(Chapitre,verbose_name="Chapitres",on_delete=models.CASCADE)
     id_Sc1=models.ForeignKey(SC_niv1, verbose_name=("Sc_niv1"), on_delete=models.CASCADE,default=None, blank=True, null=True)
     id_Sc2=models.ForeignKey(SC_niv2, verbose_name=("Sc_niv2"), on_delete=models.CASCADE,default=None, blank=True, null=True)
     id_Sc3=models.ForeignKey(SC_niv3, verbose_name=("Sc_niv3"), on_delete=models.CASCADE,default=None, blank=True, null=True)
-    id_point=models.ForeignKey(Point,verbose_name="Points",on_delete=models.CASCADE)
-    comment=models.TextField(default=None, blank=True, null=True )
+    id_point=models.ForeignKey(Point,verbose_name=("Points"),on_delete=models.CASCADE,default=None, blank=True, null=True)
+    comment=models.TextField(default=None, blank=True, null=True)
     reponse=models.BooleanField()
 
     

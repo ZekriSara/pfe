@@ -1,0 +1,496 @@
+{% extends 'Admin/layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block content %}
+
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fa fa-plus"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Ajouter une norme</li>
+              </ol>
+            </nav>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+      <div class="row">
+        <div class="col-xl-2"></div>
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              <div class="modal-header"><span id="span1" class="is-active"></span><span id="span2" ></span><span id="span3"></span></div>
+            </div>
+            <div class="card-body">
+              <div class="step  is_showing"  id="step1">
+                <label class="justatitle"><h3>Veuillez saisir les informations de la norme</h3></label>
+                <div class="norme">
+                  <div class="inline-block">
+                    <label for="id" id="id-label">Identifiant de la norme</label>
+                    <input class="input " type="text" id="id" onkeyup="this.value=this.value.toUpperCase()" >
+                  </div>
+                  <div class="inline-block">
+                    <label for="version"  id="version-label">Version de la norme</label>
+                    <input class="input"  type="number" style="width: 20%;" id="version" >
+                  </div>
+                  <div class="inline-block">
+                    <label for="titre" id="titre-label">Titre de la norme</label>
+                    <input class="input"  type="text" id="titre" >
+                  </div>
+                  <div class="inline-block">
+                    <label for="descriptif" id="descriptif-label">Déscriptif de la norme</label>
+                    <input class="input"  type="text" id="descriptif" >
+                  </div>
+                </div>
+                 <label class="justatitle"><h3>Seléctionnez le fichier contenant les chapitres</h3></label>
+                <div class="file-upload" id="file-upload">
+                     <div class="file-select" id="file">
+                         <div class="file-select-button" id="fileName">Parcourir</div>
+                         <div class="file-select-name" id="noFile">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile">
+				         <div id="msg"></div>
+                     </div>
+                </div>
+              </div>
+
+              <div class="step " id="step2">
+              <label class="justatitle"><h3>Seléctionnez le fichier contenant les sous chapitres de niveau 1</h3></label>
+                <div class="file-upload" id="file-upload1">
+                     <div class="file-select" id="file1">
+                         <div class="file-select-button" id="fileName1">Parcourir</div>
+                         <div class="file-select-name" id="noFile1">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile1">
+
+                     </div>
+                </div>
+              <label class="justatitle"><h3>Seléctionnez le fichier contenant les sous chapitres de niveau 2</h3></label>
+                <div class="file-upload " id="file-upload2" >
+                     <div class="file-select file-select-disabled" id="file2">
+                         <div class="file-select-button disabled" id="fileName2">Parcourir</div>
+                         <div class="file-select-name" id="noFile2">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile2" disabled=true>
+
+                     </div>
+                </div>
+              <label class="justatitle"><h3>Seléctionnez le fichier contenant les sous chapitres de niveau 3</h3></label>
+                <div class="file-upload" id="file-upload3">
+                     <div class="file-select file-select-disabled" id="file3">
+                         <div class="file-select-button" id="fileName3">Parcourir</div>
+                         <div class="file-select-name" id="noFile3">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile3" disabled=true>
+
+                     </div>
+                </div>
+
+              </div>
+              <div class="step " id="step3">
+                  <label class="justatitle"><h3>Seléctionnez le fichier contenant les points</h3></label>
+                <div class="file-upload" id="file-upload4">
+                     <div class="file-select" id="file4">
+                         <div class="file-select-button" id="fileName4">Parcourir</div>
+                         <div class="file-select-name" id="noFile4">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile4">
+
+                     </div>
+                </div>
+                  <label class="justatitle"><h3>Seléctionnez le fichier contenant les points</h3></label>
+                <div class="file-upload" id="file-upload5">
+                     <div class="file-select" id="file5">
+                         <div class="file-select-button" id="fileName5">Parcourir</div>
+                         <div class="file-select-name" id="noFile5">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile5">
+
+                     </div>
+                </div>
+              </div>
+           <div class="card-footer">
+             <a class="btn-upload  is_showing " id="upload" type="submit" href="#">Suivant</a>
+             <a class="btn-upload" id="upload1" type="submit" href="#">Suivant</a>
+             <a class="btn-upload " id="upload2" type="submit" href="#">Suivant</a>
+           </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2"></div>
+      </div>
+
+
+    {% include "Admin/includes/footer.html" %}
+
+  </div>
+
+ <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+$('#chooseFile').bind('change', function () {
+  var filename = $("#chooseFile").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload").removeClass('active');
+    $("#noFile").text("No file chosen...");
+  }
+  else {
+    $("#file-upload").addClass('active');
+    $("#noFile").text(filename.replace("C:\\fakepath\\", ""));
+    document.getElementById("file").classList.remove('false');
+  }
+});
+$('#chooseFile1').bind('change', function () {
+  var filename = $("#chooseFile1").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload1").removeClass('active');
+    $("#noFile1").text("No file chosen...");
+  }
+  else {
+    $("#file-upload1").addClass('active');
+    $("#noFile1").text(filename.replace("C:\\fakepath\\", ""));
+    $("#file2").removeClass('file-select-disabled');
+    document.getElementById("chooseFile2").disabled=false;
+    document.getElementById("file1").classList.remove('false');
+  }
+});
+$('#chooseFile2').bind('change', function () {
+  var filename = $("#chooseFile2").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload2").removeClass('active');
+    $("#noFile2").text("No file chosen...");
+  }
+  else {
+    $("#file-upload2").addClass('active');
+    $("#noFile2").text(filename.replace("C:\\fakepath\\", ""));
+    document.getElementById("file2").classList.remove('false');
+    $("#file3").removeClass('file-select-disabled');
+    document.getElementById("chooseFile3").disabled=false;
+  }
+});
+$('#chooseFile3').bind('change', function () {
+  var filename = $("#chooseFile3").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload3").removeClass('active');
+    $("#noFile3").text("No file chosen...");
+  }
+  else {
+    $("#file-upload3").addClass('active');
+    $("#noFile3").text(filename.replace("C:\\fakepath\\", ""));
+    document.getElementById("file3").classList.remove('false');
+  }
+});
+
+$('#chooseFile4').bind('change', function () {
+  var filename = $("#chooseFile4").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload4").removeClass('active');
+    $("#noFile4").text("No file chosen...");
+  }
+  else {
+    $("#file-upload4").addClass('active');
+    $("#noFile4").text(filename.replace("C:\\fakepath\\", ""));
+    document.getElementById("file4").classList.remove('false');
+  }
+});
+
+$('#chooseFile5').bind('change', function () {
+  var filename = $("#chooseFile5").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload5").removeClass('active');
+    $("#noFile5").text("No file chosen...");
+  }
+  else {
+    $("#file-upload5").addClass('active');
+    $("#noFile5").text(filename.replace("C:\\fakepath\\", ""));
+    document.getElementById("file5").classList.remove('false');
+  }
+});
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+				$('#upload').on('click', function () {
+					var data = new FormData();
+					var ins = document.getElementById('chooseFile').value;
+					var id= document.getElementById('id').value;
+					var titre= document.getElementById('titre').value;
+					var desc= document.getElementById('descriptif').value;
+					var version = document.getElementById('version').value;
+					var file= document.getElementById('chooseFile').files[0];
+                    var remp= 1;
+					if(ins == "") {
+						$('#noFile').text("Veuillez séléctionner un fichier");
+						document.getElementById("file").classList.add('false');
+						remp=0;
+					} else{document.getElementById("file").classList.remove('false'); }
+
+					  if(id== ""){
+                        document.getElementById("id").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("id").classList.remove('false');}
+					  if(titre== ""){
+                        document.getElementById("titre").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("titre").classList.remove('false');}
+					  if(desc== ""){
+                        document.getElementById("descriptif").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("descriptif").classList.remove('false');}
+					  if(version== ""){
+                        document.getElementById("version").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("version").classList.remove('false');}
+                    if(remp ==0){
+                    return;
+                    }
+                    data.append('file',file);
+                    data.append('id',id);
+                    data.append('titre',titre);
+                    data.append('version',version);
+                    data.append('desc',desc);
+					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+					data.append("csrfmiddlewaretoken", csrf_token);
+					$.ajax({
+					    type: 'post',
+						url: '/upload/', // point to server-side URL
+						dataType: 'json', // what to expect back from server
+						data: data,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (response) { // display success response
+alert(response.msg);
+							if(response.msg==0){
+                               document.getElementById("step1").classList.remove('is_showing');
+                               document.getElementById("step2").classList.add('is_showing');
+                               document.getElementById("span1").classList.remove('is-active');
+                               document.getElementById("span2").classList.add('is-active');
+
+                               document.getElementById("upload").classList.remove('is_showing');
+                               document.getElementById("upload1").classList.add('is_showing');
+
+							}
+							else{
+							alert(response.error);
+							}
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							                  var msg = '';
+
+                                  if (jqXHR.status === 0) {
+                                       msg = 'Not connect.\n Verify Network.';
+                                  } else if (jqXHR.status == 404) {
+                                       msg = 'Requested page not found. [404]';
+                                  } else if (jqXHR.status == 500) {
+                                       msg = 'Internal Server Error [500].';
+                                  } else if (exception === 'parsererror') {
+                                       msg = 'Requested JSON parse failed.';
+                                  } else if (exception === 'timeout') {
+                                       msg = 'Time out error.';
+                                  } else if (exception === 'abort') {
+                                       msg = 'Ajax request aborted.';
+                                  } else {
+                                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                  }
+					                   alert(msg);
+					    }
+					});
+				});
+			});
+
+
+
+</script>
+
+<script>
+ $(document).ready(function (e) {
+    $('#upload1').on('click', function () {
+
+					var data = new FormData();
+					var ins = document.getElementById('chooseFile1').value;
+					var file1= document.getElementById('chooseFile1').files[0];
+					var file2= document.getElementById('chooseFile2').files[0];
+					var file3= document.getElementById('chooseFile3').files[0];
+                    var i=0;
+                    var remp= 1;
+					if(ins == "") {
+						$('#noFile1').text("Veuillez séléctionner un fichier");
+						alert("Etes vous sûr de ne vouloir sélectionner aucun fichier");
+						remp=0;
+					} else{document.getElementById("file1").classList.remove('false');
+					       data.append('file1',file1);
+					       i=i+1;
+					 }
+
+					 var ins = document.getElementById('chooseFile2').value;
+					 if(ins == "") {
+						$('#noFile2').text("Veuillez séléctionner un fichier");
+						remp=0;
+					} else{document.getElementById("file2").classList.remove('false');
+					       data.append('file2',file2);
+					       i=i+1;
+					 }
+					 var ins = document.getElementById('chooseFile3').value;
+					 if(ins == "") {
+						$('#noFile3').text("Veuillez séléctionner un fichier");
+						remp=0;
+					} else{document.getElementById("file3").classList.remove('false');
+					       data.append('file3',file3);
+					       i=i+1;
+					 }
+                    data.append("nbFile",i);
+					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+					data.append("csrfmiddlewaretoken", csrf_token);
+								$.ajax({
+					    type: 'post',
+						url: '/upload2/', // point to server-side URL
+						dataType: 'json', // what to expect back from server
+						data: data,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (response) { // display success response
+							if(response.msg==0){
+                               document.getElementById("step2").classList.remove('is_showing');
+                               document.getElementById("step3").classList.add('is_showing');
+                               document.getElementById("span2").classList.remove('is-active');
+                               document.getElementById("span3").classList.add('is-active');
+
+                               document.getElementById("upload1").classList.remove('is_showing');
+                               document.getElementById("upload2").classList.add('is_showing');
+							}
+							else{
+							alert(response.error);
+							}
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							                  var msg = '';
+
+                                  if (jqXHR.status === 0) {
+                                       msg = 'Not connect.\n Verify Network.';
+                                  } else if (jqXHR.status == 404) {
+                                       msg = 'Requested page not found. [404]';
+                                  } else if (jqXHR.status == 500) {
+                                       msg = 'Internal Server Error [500].';
+                                  } else if (exception === 'parsererror') {
+                                       msg = 'Requested JSON parse failed.';
+                                  } else if (exception === 'timeout') {
+                                       msg = 'Time out error.';
+                                  } else if (exception === 'abort') {
+                                       msg = 'Ajax request aborted.';
+                                  } else {
+                                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                  }
+					                   alert(msg);
+					    }
+					});
+
+
+				}); });
+
+</script>
+
+
+<script>
+ $(document).ready(function (e) {
+    $('#upload2').on('click', function () {
+
+					var data = new FormData();
+					var ins = document.getElementById('chooseFile4').value;
+					var file= document.getElementById('chooseFile4').files[0];
+
+					var file1= document.getElementById('chooseFile5').files[0];
+					var inss = document.getElementById('chooseFile5').value;
+
+                    var remp= 1;
+					if(ins == "") {
+						$('#noFile4').text("Veuillez séléctionner un fichier");
+						document.getElementById("file4").classList.add('false');
+						remp=0;
+					} else{document.getElementById("file5").classList.remove('false');
+
+					 }
+
+					 if(inss == "") {
+						$('#noFile5').text("Veuillez séléctionner un fichier");
+						document.getElementById("file5").classList.add('false');
+						remp=0;
+					} else{document.getElementById("file5").classList.remove('false');
+
+					 }
+                    if(remp==0){return;}
+                     data.append('file',file);
+                     data.append('file1',file1);
+
+
+					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+					data.append("csrfmiddlewaretoken", csrf_token);
+								$.ajax({
+					    type: 'post',
+						url: '/upload3/', // point to server-side URL
+						dataType: 'json', // what to expect back from server
+						data: data,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (response) { // display success response
+
+							if(response.msg==0){
+                              alert("ok");
+							}
+							else{
+							alert(response.error);
+							}
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							                  var msg = '';
+
+                                  if (jqXHR.status === 0) {
+                                       msg = 'Not connect.\n Verify Network.';
+                                  } else if (jqXHR.status == 404) {
+                                       msg = 'Requested page not found. [404]';
+                                  } else if (jqXHR.status == 500) {
+                                       msg = 'Internal Server Error [500].';
+                                  } else if (exception === 'parsererror') {
+                                       msg = 'Requested JSON parse failed.';
+                                  } else if (exception === 'timeout') {
+                                       msg = 'Time out error.';
+                                  } else if (exception === 'abort') {
+                                       msg = 'Ajax request aborted.';
+                                  } else {
+                                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                  }
+					                   alert(msg);
+					    }
+					});
+
+
+				}); });
+
+</script>
+
+
+{% endblock content %}
+
+
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}
+
