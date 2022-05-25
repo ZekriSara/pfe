@@ -113,7 +113,7 @@
                      <div class="file-select" id="file5">
                          <div class="file-select-button" id="fileName5">Parcourir</div>
                          <div class="file-select-name" id="noFile5">Aucun fichier choisi...</div>
-                         {% csrf_token %}
+
                          <input class="input" type="file" name="files" id="chooseFile5">
 
                      </div>
@@ -267,6 +267,7 @@ $('#chooseFile5').bind('change', function () {
                     data.append('desc',desc);
 					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 					data.append("csrfmiddlewaretoken", csrf_token);
+
 					$.ajax({
 					    type: 'post',
 						url: '/upload/', // point to server-side URL

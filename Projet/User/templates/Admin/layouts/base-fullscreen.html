@@ -10,6 +10,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 -->
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 
 <head>
@@ -18,17 +19,17 @@
   <link rel="canonical" href="https://appseed.us/admin-dashboards/django-dashboard-argon">
   
   <title>
-    Django Argon Dashboard - {% block title %} Open-Source Admin Panel {% endblock %} | AppSeed
+     {% block title %}  {% endblock %}
   </title>
 
-  <link rel="icon" href="/static/assets/img/brand/favicon.png" type="image/png">
+ <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/unilogo.png' %}"/>
   <!-- Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
   <!-- Icons -->
-  <link rel="stylesheet" href="/static/assets/vendor/nucleo/css/nucleo.css" type="text/css">
-  <link rel="stylesheet" href="/static/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
+  <link rel="stylesheet" href="/static/admin/assets/vendor/nucleo/css/nucleo.css" type="text/css">
+  <link rel="stylesheet" href="/static/admin/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
   <!-- Argon CSS -->
-  <link rel="stylesheet" href="/static/assets/css/argon.css?v=1.2.0" type="text/css">
+  <link rel="stylesheet" href="/static/admin/assets/css/argon.css?v=1.2.0" type="text/css">
 
   <!-- Specific CSS goes HERE -->
   {% block stylesheets %}{% endblock stylesheets %}
@@ -37,25 +38,16 @@
 
 <body class="bg-default">
 
-  <div class="main-content">
+  <div class="main-content" >
 
-    {% include "includes/navigation-fullscreen.html" %}
+    {% include "Admin/includes/navigation-fullscreen.html" %}
 
     <!-- Header -->
-    <div class="header bg-gradient-primary py-7 py-lg-8">
+    <div class="header gray py-7 py-lg-9">
       <div class="container">
         <div class="header-body text-center mb-7">
           <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-6">
-              <h1 class="text-white">
-                <a target="_blank" class="text-white"
-                   href="https://appseed.us/admin-dashboards/django-dashboard-argon">Django Argon</a>
-              </h1>
-              <p class="text-lead text-light">
-                Open-Source Flask Starter with Argon Design 
-                Coded by <a target="_blank" class="text-white" href="https://appseed.us">AppSeed</a>.  
-              </p>
-            </div>
+
           </div>
         </div>
       </div>
@@ -68,16 +60,16 @@
     
     {% block content %}{% endblock content %}
 
-    {% include "includes/footer-fullscreen.html" %}
+    {% include "Admin/includes/footer-fullscreen.html" %}
 
   </div>
     
-  {% include "includes/scripts.html" %}
+  {% include "Admin/includes/scripts.html" %}
 
   <!-- Specific JS goes HERE --> 
   {% block javascripts %}{% endblock javascripts %}
   
-  <script src="/static/assets/js/argon.js?v=1.2.0"></script>
+  <script src="/static/admin/assets/js/argon.js?v=1.2.0"></script>
 
 </body>
 

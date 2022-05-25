@@ -105,8 +105,8 @@ class Point(models.Model):
 
 
 class Test(models.Model):
-    id_test = models.TextField(primary_key=True)
-    id_client = models.IntegerField()
+    id_test = models.AutoField(primary_key=True)
+    id_client = models.IntegerField(default=None, blank=True, null=True)
     id_norme = models.ForeignKey(Norme, verbose_name=("Normes"), on_delete=models.CASCADE)
     finished = models.BooleanField()
     date = models.DateField(default=None, blank=True, null=True)
@@ -136,6 +136,7 @@ class Reponse(models.Model):
     id_test=models.ForeignKey(Test,verbose_name="Tests",on_delete=models.CASCADE)
     id_qst=models.ForeignKey(Question_Generale,verbose_name="Questions_Generales",on_delete=models.CASCADE)
     version=models.IntegerField()
+    id_norme = models.ForeignKey(Norme, verbose_name="Normes", on_delete=models.CASCADE)
     id_chap=models.ForeignKey(Chapitre,verbose_name="Chapitres",on_delete=models.CASCADE)
     id_Sc1=models.ForeignKey(SC_niv1, verbose_name=("Sc_niv1"), on_delete=models.CASCADE,default=None, blank=True, null=True)
     id_Sc2=models.ForeignKey(SC_niv2, verbose_name=("Sc_niv2"), on_delete=models.CASCADE,default=None, blank=True, null=True)

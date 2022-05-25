@@ -77,15 +77,40 @@
            <div class="card" id="output">
               <div class="card-body">
                 <div class="card-title" id="msg">
-                    <h1> <a href="#"> {{ chapitres.0.titre }}</a>
-                         <a href="#"> <abbr title="{{ chapitres.0.descriptif}}"> &nbsp; <i class="fa-solid fa-circle-info" style="font-size:20px;"></i> </abbr></i> </a>
+                    <h1>
+                         <a href="#" > <abbr id="chap" title="{{ point.id_chap.descriptif}}"> &nbsp;{{ point.id_chap }} </abbr></a>
                     </h1>
                 </div>
+
+              {% if point.id_Sc1 != None %}
+                <div class="card-title" >
+                   <h2>
+                         <a href="#"> <abbr id="sc1" title="{{point.id_Sc1.objectif}}" > &nbsp;{{ point.id_Sc1 }} </abbr></a>
+                   </h2>
+                </div>
+
+                {% if point.id_Sc2 != None %}
+                <div class="card-title" >
+                   <h3>
+                         <a href="#"> <abbr id="sc2" title="{{point.id_Sc2.objectif}}"> {{ point.id_Sc2 }} </abbr> </a>
+                   </h3>
+                </div>
+
+                {% if point.id_Sc3 != None %}
+                 <div class="card-title" >
+                   <h4>
+                         <a href="#"> <abbr id="sc3" title="{{point.id_Sc3.objectif}}"> &nbsp;{{ point.id_Sc3 }} </abbr> </a>
+                   </h4>
+                 </div>
+
+                  {% endif %}
+                  {% endif %}
+                  {% endif %}
                 <div class="point" id="point_titre">
-                    <p> {{ points.0.titre }}</p>
+                    <p> {{ point.titre }}</p>
                 </div>
                 <div class="card-descri" id="point_descri" >
-                    <p> {{ points.0.point }} </p>
+                    <p> {{ point.point }} </p>
                 </div>
                 <div class="card-quizz">
                     <ul id="questions">
@@ -95,8 +120,8 @@
                            <div class="inline-block">
                              <div class="question">{{ q.question }}</div>
                              <div class="check">
-                             <label> <input type="radio" id="{{q.id_qst}}_oui" name="choice-radio{{forloop.counter}}" value="{{points.0.id_point}}/{{q.id_qst}}/oui"> Oui </label> &nbsp;&nbsp;
-                             <label> <input type="radio" id="{{q.id_qst}}_non" name="choice-radio{{forloop.counter}}" value="{{points.0.id_point}}/{{q.id_qst}}/non"> Non </label>
+                             <label> <input type="radio" id="{{q.id_qst}}_oui" name="choice-radio{{forloop.counter}}" value="oui"> Oui </label> &nbsp;&nbsp;
+                             <label> <input type="radio" id="{{q.id_qst}}_non" name="choice-radio{{forloop.counter}}" value="non"> Non </label>
                              </div>
                              <div class="comment">
                              <input class="custom-search-input"  id="com{{forloop.counter}}" placeholder="com{{forloop.counter}}" >
@@ -110,10 +135,12 @@
 
               </div>
                <div class="card-footer">
-                 <a href="#" id="previous" class="previous round"><i class="fa-solid fa-chevron-left"></i></a>
                  <a href="#" id="next" class="next round"><i class="fa-solid fa-chevron-right"></i></a>
+                 <a href="/home" id="fin" class="next round disp"><i class="fa-solid fa-floppy-disk"></i></a>
 
-            <div id="point" data-value="{{ points.0.id_point }}">  </div>
+            <div id="point" data-value="{{ point.id_point }}">  </div>
+            <div id="test" data-value="{{ id_test }}">  </div>
+
             <div id="nb_qst" data-value="{{ i }}"></div>
                 </div>
            </div>
@@ -149,36 +176,105 @@
 
         var size= document.getElementById("nb_qst").getAttribute('data-value');
         var point=document.getElementById("point").getAttribute('data-value');
+        var test=document.getElementById("test").getAttribute('data-value');
 
-        var com= [];
-        var rep = [];
+
+        var com= "";
+        var rep = "";
+
         for(let i=1; i<=size; i++) {
-         rep.push($("input[type='radio'][name='choice-radio"+i+"']:checked").val());
-         com.push(document.getElementById("com"+i).value);
+
+         r= document.querySelector('input[name="choice-radio'+i+'"]:checked').value;
+         if ( i == 1) {
+         rep = rep +r;
+
+         com = com  + document.getElementById("com"+i).value;}
+
+         else { rep = rep + ";" +r;
+
+         com = com + ";" + document.getElementById("com"+i).value;
+         }
+
         }
 
         var el=document.getElementById("questions");
          /* el.textContent=rep; */
 
-
               $.ajax({
                 type : 'GET',
-                url : "../../ajax/",
+                url : "../../../ajax/",
                 dataType:'json',
                 data : {
+                  'test':test,
                   'point':point,
+                  'rep':rep,
+                  'com':com
                 },
                 success:function(response){
 
                 if (response.end==0){
+                 if(response.cas==0){
                 document.getElementById("questions").innerHTML=response.quizz;
                 document.getElementById("point_titre").textContent=response.point;
                 document.getElementById("point_descri").textContent=response.point_descri;
                 document.getElementById("point").setAttribute('data-value',response.id);
                 }
+                 if(response.cas==1){
+
+                document.getElementById("questions").innerHTML=response.quizz;
+                document.getElementById("point_titre").textContent=response.point;
+                document.getElementById("point_descri").textContent=response.point_descri;
+                document.getElementById("point").setAttribute('data-value',response.id);
+                document.getElementById("sc3").textContent=response.sc3;
+                document.getElementById("sc3").setAttribute('title',response.sc3_des);
+                 }
+
+                 if(response.cas==2){
+                document.getElementById("questions").innerHTML=response.quizz;
+                document.getElementById("point_titre").textContent=response.point;
+                document.getElementById("point_descri").textContent=response.point_descri;
+                document.getElementById("point").setAttribute('data-value',response.id);
+                document.getElementById("sc2").textContent=response.sc2;
+                document.getElementById("sc2").setAttribute('title',response.sc2_des);
+                document.getElementById("sc3").textContent=response.sc3;
+                document.getElementById("sc3").setAttribute('title',response.sc3_des);
+                 }
+
+                if(response.cas==3){
+                document.getElementById("questions").innerHTML=response.quizz;
+                document.getElementById("point_titre").textContent=response.point;
+                document.getElementById("point_descri").textContent=response.point_descri;
+                document.getElementById("point").setAttribute('data-value',response.id);
+                document.getElementById("sc1").textContent=response.sc1;
+                document.getElementById("sc1").setAttribute('title',response.sc1_des);
+                document.getElementById("sc2").textContent=response.sc2;
+                document.getElementById("sc2").setAttribute('title',response.sc2_des);
+                document.getElementById("sc3").textContent=response.sc3;
+                document.getElementById("sc3").setAttribute('title',response.sc3_des);
+                 }
+               if(response.cas==4){
+                document.getElementById("questions").innerHTML=response.quizz;
+                document.getElementById("point_titre").textContent=response.point;
+                document.getElementById("point_descri").textContent=response.point_descri;
+                document.getElementById("point").setAttribute('data-value',response.id);
+                document.getElementById("chap").textContent=response.chap;
+                document.getElementById("chap").setAttribute('title',response.chap_des);
+                document.getElementById("sc1").textContent=response.sc1;
+                document.getElementById("sc1").setAttribute('title',response.sc1_des);
+                document.getElementById("sc2").textContent=response.sc2;
+                document.getElementById("sc2").setAttribute('title',response.sc2_des);
+                document.getElementById("sc3").textContent=response.sc3;
+                document.getElementById("sc3").setAttribute('title',response.sc3_des);
+                 }
+
+                }
                 else {
 
-                if(response.end==1){alert(response.end);}
+                if(response.end==1){
+                  document.getElementById("fin").classList.remove('disp');
+                  document.getElementById("next").classList.add('disp');
+
+                }
                 else {alert(response.end);}
 
                 }

@@ -1,8 +1,9 @@
+from datetime import datetime
 
-from .models import Norme, Chapitre, Point, Question_Generale, SC_niv1, SC_niv2,SC_niv3, Reponse
+from .models import Norme, Chapitre, Point, Question_Generale, SC_niv1, SC_niv2, SC_niv3, Reponse, Test
 
 import codecs
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.core.files.storage import FileSystemStorage, default_storage
@@ -14,111 +15,489 @@ from django.conf import settings
 import sys
 import pandas as pd
 
+# Auth side views
 
+def login(request):
+    return render(request,"Admin/accounts/login.html")
+def register(request):
+    return render(request,"Admin/accounts/register.html")
 
-# Create your views here.
+# Client side views
 
 
 def index(request):
 
     normes=Norme.objects.all()
-    chap=Chapitre.objects.all()
-    point=Point.objects.all()
-    qst= Question_Generale()
-    for n in normes:
-        n.delete()
+    tests=Test.objects.all()
+
+
+
+
+    #for n in normes:
+      #  n.delete()
 
 
 
     context={
         'normes':normes,
+        'tests':tests
     }
     return render(request, "index.html",context)
 
 def quizz(request,id):
+    test= Test()
+    test.id_norme= Norme.objects.get(id=id)
+    test.finished= False
+    test.date= datetime.now()
+    test.save()
+
+    test=str(test.id_test)
+    link= "/quizz/"+id+"/"+test
+    return redirect(link)
+
+def quizz2(request,id, test):
     normes = Norme.objects.all()
     points = Point.objects.all()
     chapitres = Chapitre.objects.all()
     questions = Question_Generale.objects.all()
     i = len(questions)
+    id= test
+
+
+
+    t= Test.objects.get(id_test=id)
+
+    if t.last_point == None:
+        p = Point.objects.first()
+    else:
+        p= Point.objects.get(id_point=t.last_point)
+
     context = {
         'normes': normes,
         'chapitres': chapitres,
         'points': points,
         'questions': questions,
+        'point':p,
         'i': i,
+        'id_test':id
     }
 
     return render(request, "quizz.html", context)
 
-def resultat(request):
-    return render(request,"result.html")
 
-def maj2(request):
-    x="essai"
-    return JsonResponse({'x':x})
-
-
-
-def maj(request):
-######Récupération et incrémentation
-    point_id = request.GET.get('point')
-    p = point_id.split('_')
+def point_suivant(p):
     taille = len(p)
     incr = int(p[taille - 1])
     incr = incr + 1
-    incr = str(incr)
+
     id = ""
     for i in range(taille - 1):
         id = id + p[i] + "_"
+    if incr < 10:
+        incr = str(incr)
+        id = id + "0" + incr
+    else:
+        incr = str(incr)
+        id = id + incr
+    return id
+def tailleMinus2(p):
+    taille=len(p)
+    incr = int(p[taille - 2])
+    incr = incr + 1
+    id = ""
+    for i in range(taille - 2):
+        id = id + p[i] + "_"
 
-    id = id + "0" + incr
+    if incr < 10:
+        incr = str(incr)
+        id = id + "0" + incr
+    else:
+        incr = str(incr)
+        id = id + incr
+    return id
+def tailleMinus3(p):
+    taille=len(p)
+    incr = int(p[taille - 3])
+    incr = incr + 1
+    id = ""
+    for i in range(taille - 3):
+        id = id + p[i] + "_"
 
-########## Next point exists
-    if Point.objects.filter(id_point=id).exists():
-        end=0
-        point_actu = Point.objects.get(id_point=id)
-        questions = Question_Generale.objects.all()
-        i=1
-        quizz=""
-        #code html pour les questions
-        for q in questions:
-            rep = ('<li>' +
-                   '<div class="inline-block">' +
-                   '<div class="question">' + q.question + '</div>' +
-                   '<div class="check">' +
-                   '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(i) + '" value="' + point_actu.id_point + '/' + q.id_qst + '/oui"> Oui </label> &nbsp;&nbsp;' +
-                   '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(i) + '" value="' + point_actu.id_point + '/' + q.id_qst + '/non"> Non </label>' +
-                   '</div>' +
-                   '<div class="comment">' +
-                   '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
-                   '</div>' +
-                   '</div>' +
-                   '</li>')
-            quizz = quizz+rep
-            i=i+1
+    if incr < 10:
+        incr = str(incr)
+        id = id + "0" + incr
+    else:
+        incr = str(incr)
+        id = id + incr
+    return id
+def tailleMinus4(p):
+    taille=len(p)
+    incr = int(p[taille - 4])
+    incr = incr + 1
+    id = ""
+    for i in range(taille - 4):
+        id = id + p[i] + "_"
+
+    if incr < 10:
+        incr = str(incr)
+        id = id + "0" + incr
+    else:
+        incr = str(incr)
+        id = id + incr
+    return id
+def tailleMinus5(p):
+    taille=len(p)
+    incr = int(p[taille - 5])
+    incr = incr + 1
+    id = ""
+    for i in range(taille - 5):
+        id = id + p[i] + "_"
+
+    if incr < 10:
+        incr = str(incr)
+        id = id + "0" + incr
+    else:
+        incr = str(incr)
+        id = id + incr
+    return id
+def codeHtmlQuestion(point_actu):
+    #conditionn si question existe sinon question generale
+    i = 1
+    quizz=""
+    questions = Question_Generale.objects.filter(id_norme=point_actu.id_norme)
+    for q in questions:
+        rep = ('<li>' +
+               '<div class="inline-block">' +
+               '<div class="question">' + q.question + '</div>' +
+               '<div class="check">' +
+               '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
+                    i) + '" value="' + point_actu.id_point + '/' + q.id_qst + '/oui"> Oui </label> &nbsp;&nbsp;' +
+               '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
+                    i) + '" value="' + point_actu.id_point + '/' + q.id_qst + '/non"> Non </label>' +
+               '</div>' +
+               '<div class="comment">' +
+               '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
+               '</div>' +
+               '</div>' +
+               '</li>')
+        quizz = quizz + rep
+        i = i + 1
+    return quizz
+def dataReturnNextChap(point_actu,end):
+    quizz = codeHtmlQuestion(point_actu)
+    id_chap= point_actu.id_chap.id_chap
+    chap_actu = Chapitre.objects.get(id_chap=id_chap)
+    if point_actu.id_Sc1 == None:
         data = {'quizz': quizz,
                 'point': point_actu.titre,
                 'point_descri': point_actu.point,
                 'id': point_actu.id_point,
-                'end': end
+                'chap': chap_actu.titre,
+                'chap_des': chap_actu.descriptif,
+                'end': end,
+                'cas': 4
                 }
     else:
-
-        id_chap = "cis_01"
-        if Chapitre.objects.filter(id_chap=id_chap).exists():
-            end = 1
-            data={"end":end}
-            return JsonResponse(data)
+        if point_actu.id_Sc2 == None:
+            sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
+            data = {'quizz': quizz,
+                    'point': point_actu.titre,
+                    'point_descri': point_actu.point,
+                    'id': point_actu.id_point,
+                    'chap': chap_actu.titre,
+                    'chap_des': chap_actu.descriptif,
+                    'sc1': sc1.titre,
+                    'sc1_des': sc1.objectif,
+                    'end': end,
+                    'cas': 4
+                    }
         else:
-            end = 2
-            data = {"end": end}
-            return JsonResponse(data)
+            if point_actu.id_Sc3 == None:
+                sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
+                sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+                data = {'quizz': quizz,
+                        'point': point_actu.titre,
+                        'point_descri': point_actu.point,
+                        'id': point_actu.id_point,
+                        'chap': chap_actu.titre,
+                        'chap_des': chap_actu.descriptif,
+                        'sc1': sc1.titre,
+                        'sc1_des': sc1.objectif,
+                        'sc2': sc2.titre,
+                        'sc2_des': sc2.objectif,
+                        'end': end,
+                        'cas': 4
+                        }
+            else:
+                sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
+                sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+                sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
+                data = {'quizz': quizz,
+                        'point': point_actu.titre,
+                        'point_descri': point_actu.point,
+                        'id': point_actu.id_point,
+                        'chap': chap_actu.titre,
+                        'chap_des': chap_actu.descriptif,
+                        'sc1': sc1.titre,
+                        'sc1_des': sc1.objectif,
+                        'sc2': sc2.titre,
+                        'sc2_des': sc2.objectif,
+                        'sc3': sc3.titre,
+                        'sc3_des': sc3.objectif,
+                        'end': end,
+                        'cas': 4
+                        }
+
+    return data
+def dataReturnNextSC1(point_actu,end):
+
+    if point_actu.id_Sc2 == None:
+        sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
+        data = {'quizz': quizz,
+                'point': point_actu.titre,
+                'point_descri': point_actu.point,
+                'id': point_actu.id_point,
+                'sc1': sc1.titre,
+                'sc1_des': sc1.objectif,
+                'end': end,
+                'cas': 3
+                }
+
+    else:
+        if point_actu.id_Sc3 == None:
+            sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
+            sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+            data = {'quizz': quizz,
+                    'point': point_actu.titre,
+                    'point_descri': point_actu.point,
+                    'id': point_actu.id_point,
+                    'sc1': sc1.titre,
+                    'sc1_des': sc1.objectif,
+                    'sc2': sc2.titre,
+                    'sc2_des': sc2.objectif,
+                    'end': end,
+                    'cas': 3
+                    }
+        else:
+            sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
+            sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+            sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
+            data = {'quizz': quizz,
+                    'point': point_actu.titre,
+                    'point_descri': point_actu.point,
+                    'id': point_actu.id_point,
+                    'sc1': sc1.titre,
+                    'sc1_des': sc1.objectif,
+                    'sc2': sc2.titre,
+                    'sc2_des': sc2.objectif,
+                    'sc3': sc3.titre,
+                    'sc3_des': sc3.objectif,
+                    'end': end,
+                    'cas': 3
+                    }
+
+    return data
+def dataReturnNextSC2(point_actu,end):
+
+        if point_actu.id_Sc3 == None:
+            sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+            data = {'quizz': quizz,
+                    'point': point_actu.titre,
+                    'point_descri': point_actu.point,
+                    'id': point_actu.id_point,
+                    'sc2': sc2.titre,
+                    'sc2_des': sc2.objectif,
+                    'end': end,
+                    'cas': 2
+                    }
+        else:
+            sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+            sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
+            data = {'quizz': quizz,
+                    'point': point_actu.titre,
+                    'point_descri': point_actu.point,
+                    'id': point_actu.id_point,
+                    'sc2': sc2.titre,
+                    'sc2_des': sc2.objectif,
+                    'sc3': sc3.titre,
+                    'sc3_des': sc3.objectif,
+                    'end': end,
+                    'cas': 2
+                    }
+
+        return data
+def dataReturnNextSC3(point_actu,end):
+    sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
+    data = {'quizz': quizz,
+            'point': point_actu.titre,
+            'point_descri': point_actu.point,
+            'id': point_actu.id_point,
+            'sc3': sc3.titre,
+            'sc3_des': sc3.objectif,
+            'end': end,
+            'cas': 1
+            }
+    return data
+def maj(request):
+    #sauvegarde de réponse
+    rep= request.GET.get('rep')
+    com=request.GET.get('com')
+    point_id = request.GET.get('point')
+    test= request.GET.get('test')
+
+    pre = Point.objects.get(id_point=point_id)
+    rep= rep.split(';')
+    com= com.split(';')
+    taille=len(rep)
+    for i in range(taille):
+        r= Reponse()
+        incr= str(i+1)
+        r.id_test= Test.objects.get(id_test= test)
+        #id_qst= pre.id_norme + "_" + incr
+        id_qst= str(i+1)
+        r.id_qst = Question_Generale.objects.get(id_qst=id_qst)
+        r.id_reponse=id_qst
+        r.id_point= pre
+        r.id_chap= pre.id_chap
+        r.id_Sc1= pre.id_Sc1
+        r.id_Sc2 = pre.id_Sc2
+        r.id_Sc3 = pre.id_Sc3
+        r.id_norme= Norme.objects.get(id=pre.id_norme.id)
+        r.version = pre.version
+        r.comment= com[i]
+        if rep[i] == "oui":
+            r.reponse= True
+        else :
+            r.reponse = False
+
+        r.save()
+
+
+    t= Test.objects.get(id_test=test)
+    t.last_point= pre.id_point
+    t.save()
+
+#Récupération et incrémentation
+
+    p = point_id.split('_')
+    taille= len(p)
+    id_point=point_suivant(p)
+    end=0
+
+# Next point exists
+    if Point.objects.filter(id_point=id_point).exists():
+        point_actu = Point.objects.get(id_point=id_point)
+        quizz=codeHtmlQuestion(point_actu)
+        data = {'quizz': quizz,
+                'point': point_actu.titre,
+                'point_descri': point_actu.point,
+                'id': point_actu.id_point,
+                'end': end,
+                'cas':0
+                }
+    else: #NEXT SOUS CHAPITRE
+        if taille== 6:
+            id_sc3= tailleMinus2(p)
+            if SC_niv3.objects.filter(id_Sc3=id_sc3).exists():
+                point_actu = Point.objects.filter(id_Sc3=id_sc3,id_Sc2=pre.id_Sc2.id_Sc2,id_Sc1=pre.id_Sc1.id_Sc1, id_chap=pre.id_chap.id_chap).first()
+                data = dataReturnNextSC3(point_actu, end)
+                return JsonResponse(data)
+            else:
+                id_sc2= tailleMinus3(p)
+                if SC_niv2.objects.filter(id_Sc2=id_sc2).exists():
+                    point_actu = Point.objects.filter(id_Sc2=id_sc2, id_Sc1=pre.id_Sc1.id_Sc1,id_chap=pre.id_chap.id_chap).first()
+                    data = dataReturnNextSC2(point_actu, end)
+                    return JsonResponse(data)
+                else:
+                    id_sc1= tailleMinus4(p)
+                    if SC_niv1.objects.filter(id_Sc1=id_sc1).exists():
+                        point_actu = Point.objects.filter( id_Sc1=id_sc1, id_chap=pre.id_chap.id_chap).first()
+                        data = dataReturnNextSC1(point_actu, end)
+                        return JsonResponse(data)
+                    else:
+                        id_chap= tailleMinus5(p)
+                        if Chapitre.objects.filter(id_chap=id_chap).exists():
+                            point_actu = Point.objects.filter(id_chap=id_chap).first()
+                            data = dataReturnNextChap(point_actu, end)
+                            return JsonResponse(data)
+                        else:
+                            end = 1
+                            #fin
+
+        if taille== 5:
+            id_sc2 = tailleMinus2(p)
+            if SC_niv2.objects.filter(id_Sc2=id_sc2).exists():
+                point_actu=Point.objects.filter(id_Sc2=id_sc2,id_Sc1=pre.id_Sc1.id_Sc1,id_chap=pre.id_chap.id_chap).first()
+                data= dataReturnNextSC2(point_actu,end)
+                return JsonResponse(data)
+            else:
+                id_sc1 = tailleMinus3(p)
+                if SC_niv1.objects.filter(id_Sc1=id_sc1).exists():
+                    point_actu = Point.objects.filter(id_Sc1=id_sc1, id_chap=pre.id_chap.id_chap).first()
+                    data = dataReturnNextSC1(point_actu, end)
+                    return JsonResponse(data)
+                else:
+                    id_chap = tailleMinus4(p)
+                    if Chapitre.objects.filter(id_chap=id_chap).exists():
+                        point_actu = Point.objects.filter(id_chap=id_chap).first()
+                        data = dataReturnNextChap(point_actu, end)
+                        return JsonResponse(data)
+                    else:
+                        end = 1
+                        # fin
+
+        if taille== 4:
+            id_sc1= tailleMinus2(p)
+            id_chap= pre.id_chap.id_chap
+            if SC_niv1.objects.filter(id_Sc1=id_sc1).exists():
+                point_actu = Point.objects.filter(id_chap=id_chap, id_sc1=id_sc1).first()
+                data = dataReturnNextSC1(point_actu,end)
+                return JsonResponse(data)
+            else: #NEXT CHAPITRE
+                id_chap= tailleMinus3(p)
+                if Chapitre.objects.filter(id_chap=id_chap).exists():
+                    point_actu=Point.objects.filter(id_chap=id_chap).first()
+                    data= dataReturnNextChap(point_actu,end)
+                    return JsonResponse(data)
+                else:
+                    #FIN
+                    end=1
+
+
+        if taille==3:
+            id_chap = tailleMinus2(p)
+            if Chapitre.objects.filter(id_chap=id_chap).exists():
+                point_actu = Point.objects.filter(id_chap=id_chap).first()
+                data= dataReturnNextChap(point_actu,end)
+                return JsonResponse(data)
+
+            else:
+                return JsonResponse({'end':1})
+
+
+
+
+
 
 
     return JsonResponse(data)
 
+def resultat(request):
+    return render(request,"resultat.html")
 
+
+
+# Admin side views
+
+
+
+def adminIndex(request):
+    return render(request,'Admin/home/index.html')
+
+def userindex(request):
+    return render(request,"Admin/home/tables.html")
+def ajouternorme(request):
+    return render(request,"Admin/home/ajouternorme.html")
 
 
 def remplacer(file):
@@ -137,7 +516,21 @@ def remplacer(file):
     newtext=newtext.replace("Ã","à")
     return newtext
 
+def remplacer2(file):
+    newtext=""
+    for char in file:
+        newtext = newtext + char
+    newtext=newtext.replace("“","ô")
+    newtext=newtext.replace("‚","é")
+    newtext=newtext.replace("Š", "è")
+    newtext=newtext.replace("ˆ", "ê")
+    newtext=newtext.replace("Ã»", "û")
+    newtext=newtext.replace("Ã¹", "ù")
+    newtext=newtext.replace("Ã§", "ç")
+    newtext=newtext.replace("?", "'")
 
+    newtext=newtext.replace("Ã","à")
+    return newtext
 
 def upload(request):
 
@@ -278,8 +671,6 @@ def upload2(request):
 
     return JsonResponse({"msg":0})
 
-
-
 def upload3(request):
 
     file= request.FILES.get('file')
@@ -394,67 +785,3 @@ def upload3(request):
 
     msg=0
     return JsonResponse({"msg":msg})
-
-
-
-
-
-@ensure_csrf_cookie
-def upload_files(request):
-    if request.method == "GET":
-        return render(request, 'files_upload.html', )
-    if request.method == 'POST':
-        files = request.FILES.getlist('files[]', None)
-        #print(files)
-        #for f in files:
-            #handle_uploaded_file(f)
-        return JsonResponse({'msg':'<span style="color: green;">File successfully uploaded</span>'})
-    else:
-        return render(request, 'files_upload.html', )
-
-
-def upload_data(request):
-
-    text=open(os.path.join(settings.MEDIA_ROOT,'csv_test.csv'),'rb').read()
-    print(text)
-    for i,row in enumerate(text) :
-            if i==0 :
-                pass
-            else :
-                print(row)
-                return render(request, 'files_upload.html', )
-
-
-def upload_data2(request):
-    obj=FileModel.objects.get()
-    text=open(os.path.join(settings.MEDIA_ROOT,'csv_test.csv'),'rb').read()
-    #print(text)
-    khra=obj.doc.path
-    khra2=khra.split('/')
-    izan=khra2[2]
-    print(khra)
-    print('2')
-    print(text)
-    print(izan)
-    with open(izan,'r') as f:
-         reader=csv.DictReader(codecs.interdecode(f, "utf-8"),delimiter=";")
-
-         for i,row in enumerate(reader) :
-            if i==0 :
-                pass
-            else :
-                print(row)
-                return render(request, 'files_upload.html', )
-
-
-def adminIndex(request):
-    return render(request,'Admin/home/index.html')
-def login(request):
-    return render(request,"Admin/accounts/login.html")
-def register(request):
-    return render(request,"Admin/accounts/register.html")
-
-def userindex(request):
-    return render(request,"Admin/home/tables.html")
-def ajouternorme(request):
-    return render(request,"Admin/home/ajouternorme.html")

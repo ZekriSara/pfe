@@ -17,7 +17,7 @@
 </head>
 <body>
 
-  <div class='popup'>
+  <div class='popup' id="popup1">
         <div class='cnt223'>
 
           <p><a href='#' class='close'><i class='fa-solid fa-xmark'></i></a></p>
@@ -26,6 +26,24 @@
           {% for n in normes %}
           <li>
             <a href="/quizz/{{n.id}}"> {{ n.titre }} </a>
+
+          </li>
+
+
+          {% endfor %}
+          </ul>
+
+        </div>
+  </div>
+   <div class='popup' id="popup2">
+        <div class='cnt223'>
+
+          <p><a href='#' class='close'><i class='fa-solid fa-xmark'></i></a></p>
+          <h1>Choisissez la norme</h1>
+          <ul>
+          {% for t in tests %}
+          <li>
+            <a href="/quizz/{{t.id_norme.id}}/{{t.id_test}}"> {{ t.id_norme   }} </a>
 
           </li>
 
@@ -66,7 +84,7 @@
 
 
 
-        <a class="btn btn--revert btn--width" href="">Reprendre</a>
+        <a class="btn btn--revert btn--width" id="rep" href="#">Reprendre</a>
       </div>
       <img class="site__img" src="{% static 'images/test.svg' %}">
     </div>
@@ -231,7 +249,41 @@ document.getElementById("cl").addEventListener("click", function(){
   overlay.appendTo(document.body);
 
   document.querySelector("body").classList.toggle("active");
-  $('.popup').show();
+  $('#popup1').show();
+
+ $('.close').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+$('.x').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+});
+
+$(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+</script>
+
+  <script>
+
+document.getElementById("rep").addEventListener("click", function(){
+
+  var overlay = $('<div id="overlay">   </div>');
+  overlay.show();
+
+  overlay.appendTo(document.body);
+
+  document.querySelector("body").classList.toggle("active");
+  $('#popup2').show();
 
  $('.close').click(function(){
 $('.popup').hide();

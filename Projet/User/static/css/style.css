@@ -222,7 +222,7 @@ body.active .wrapper .content .card{
      width: 78%;
      height: 90%;
      position: fixed;
-       box-shadow:  0 4px 8px 0px rgba(0,0,0,0.2);
+     box-shadow:  0 4px 8px 0px rgba(0,0,0,0.2);
      border-radius: 5px;
      margin-left : 21%;
      margin-top: 0%;
@@ -289,7 +289,12 @@ body.active .wrapper .content .card{
 color: #1f4568;
 font-family: 'Lato', sans-serif;
 }
-
+.sc1 {
+  text-align:center;
+  margin-bottom: 15px;
+  font-size: 25px;
+  color: #1f4568;
+}
 .point {
   text-align:center;
   margin-bottom: 15px;
@@ -402,9 +407,13 @@ color: #fff;
 }
 
 .round {
-  border-radius: 50%;
+  border-radius: 10%;
 }
 
+
+.round.disp{
+display:none;
+}
 
 
 form{

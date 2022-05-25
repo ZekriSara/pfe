@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="canonical" href="https://appseed.us/admin-dashboards/django-dashboard-argon">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/unilogo.png' %}"/>
+  <title>
+    Dashboard
+  </title>
+
+  <!-- Favicon - loaded as static -->
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+  <!-- Icons -->
+  <link rel="stylesheet" href="/static/admin/assets/vendor/nucleo/css/nucleo.css" type="text/css">
+  <link rel="stylesheet" href="/static/admin/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" type="text/css">
+  <!-- Page plugins -->
+  <!-- Argon CSS -->
+  <link rel="stylesheet" href="/static/admin/assets/css/argon.css?v=1.2.0" type="text/css">
+   <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
+
+
+</head>
+
+<body class="">
+
+
+  <div class="main-content" id="panel">
+<nav id="navbar-main" class="navbar navbar-horizontal navbar-transparent navbar-main navbar-expand-lg navbar-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <img class="header__img" src="{% static 'images/unilogo.png' %}"> <h1 class="header__title"><span class="header__light">UNIDEES</span></h1>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse navbar-custom-collapse collapse" id="navbar-collapse">
+      <div class="navbar-collapse-header">
+        <div class="row">
+          <div class="col-6 collapse-brand">
+            <a href="/">
+              <img src="/static/admin/assets/img/brand/blue.png">
+            </a>
+          </div>
+          <div class="col-6 collapse-close">
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item header__el"><a href="/home/" class="nav-link header__link">Acceuil</a></li>
+        <li class="header__el"><a href="/resultat" class="nav-link header__link">Résultats</a></li>
+      </ul>
+      <hr class="d-lg-none" />
+      <ul class="navbar-nav align-items-center  ml-auto ml-md-0 ">
+
+
+        <li class="header__el"><a href="#" class="nav-link header__link">Contactez-nous</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="media align-items-center">
+              <span class="avatar avatar-sm rounded-circle">
+                <img alt="Image placeholder" src="/static/admin/assets/img/theme/team-4.jpg">
+              </span>
+              <div class="media-body  ml-2  d-none d-lg-block">
+                <span class="mb-0 text-sm  font-weight-bold">
+                  {{ request.user.username }}
+                </span>
+              </div>
+            </div>
+          </a>
+          <div class="dropdown-menu  dropdown-menu-right ">
+
+            <a href="/profile.html" class="dropdown-item">
+              <i class="ni ni-single-02"></i>
+              <span>Mon profile</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'logout' %}" class="dropdown-item">
+              <i class="ni ni-user-run text-red"></i>
+              <span>Se déconnecter</span>
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+     <div class="header bg-primary pb-6">
+
+      <br> <br> <br>
+      <div class="container-fluid">
+        <div class="header-body" >
+          <div class="row  py-5" style="text-align:center;">
+            <div class="col-lg-12 col-7">
+              <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h1 style="color:white;"> Vos résultats pour le test X</h1>
+              </nav>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="container-fluid mt--6">
+      <div class="row">
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              Graphe arraignée
+            </div>
+            <div class="card-body">
+
+             <div class="chart">
+
+                <canvas id="canvas" class="chart-canvas"></canvas>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              Graphe cercle normal
+            </div>
+            <div class="card-body">
+
+              <div class="circle-chart-wrap">
+
+  <div class="circle-chart theme05" data-percent="88">
+    <div class="chart-box">
+      <div class="chart-circle-base"></div>
+      <svg>
+        <circle r="50%" cx="50%" cy="50%" class="chart-circle-progress" stroke-width="14" stroke-linecap="round"></circle>
+      </svg>
+      <div class="per-num"><span>0</span>%</div>
+    </div>
+  </div>
+</div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Pourcentage par chapitre</h3>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% include "Admin/includes/footer.html" %}
+
+    </div>
+
+
+  </div>
+
+  {% include "Admin/includes/scripts.html" %}
+
+
+  <script src="/static/admin/assets/js/argon.js?v=1.2.0"></script>
+
+
+ <script src="/static/admin/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/admin/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+<script>
+
+  var canvas = document.getElementById("canvas");
+
+var gradientBlue = canvas.getContext('2d').createLinearGradient(0, 0, 0, 150);
+gradientBlue.addColorStop(0, 'rgba(85, 85, 255, 0.9)');
+gradientBlue.addColorStop(1, 'rgba(151, 135, 255, 0.8)');
+
+var gradientHoverBlue = canvas.getContext('2d').createLinearGradient(0, 0, 0, 150);
+gradientHoverBlue.addColorStop(0, 'rgba(65, 65, 255, 1)');
+gradientHoverBlue.addColorStop(1, 'rgba(131, 125, 255, 1)');
+
+var gradientRed = canvas.getContext('2d').createLinearGradient(0, 0, 0, 150);
+gradientRed.addColorStop(0, 'rgba(255, 85, 184, 0.9)');
+gradientRed.addColorStop(1, 'rgba(255, 135, 135, 0.8)');
+
+var gradientHoverRed = canvas.getContext('2d').createLinearGradient(0, 0, 0, 150);
+gradientHoverRed.addColorStop(0, 'rgba(255, 65, 164, 1)');
+gradientHoverRed.addColorStop(1, 'rgba(255, 115, 115, 1)');
+
+var redArea = null;
+var blueArea = null;
+
+var shadowed = {
+	beforeDatasetsDraw: function(chart, options) {
+    chart.ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+    chart.ctx.shadowBlur = 40;
+  },
+  afterDatasetsDraw: function(chart, options) {
+  	chart.ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+    chart.ctx.shadowBlur = 0;
+  }
+};
+
+Chart.plugins.register({
+  afterEvent: function(chart, e) {
+ 		// Hardcoded hover areas
+
+    // Red chart
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(91, 69);
+    chart.ctx.lineTo(152, 80);
+    chart.ctx.lineTo(192, 75);
+    chart.ctx.lineTo(213, 138);
+    chart.ctx.lineTo(148, 168);
+    chart.ctx.lineTo(105, 126);
+    chart.ctx.fill();
+    chart.ctx.closePath();
+
+    if (chart.ctx.isPointInPath(e.x, e.y)) {
+    	var dataset = window.chart.data.datasets[0];
+      dataset.backgroundColor = gradientHoverRed;
+      window.chart.update();
+      canvas.style.cursor = 'pointer';
+    } else {
+    	var dataset = window.chart.data.datasets[0];
+      dataset.backgroundColor = gradientRed;
+      window.chart.update();
+      canvas.style.cursor = 'default';
+    }
+
+    // Blue chart
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(85, 61);
+    chart.ctx.lineTo(149, 66);
+    chart.ctx.lineTo(224, 63);
+    chart.ctx.lineTo(179, 112);
+    chart.ctx.lineTo(152, 177);
+    chart.ctx.lineTo(121, 117);
+    chart.ctx.fill();
+    chart.ctx.closePath();
+
+    if (chart.ctx.isPointInPath(e.x, e.y)) {
+    	var dataset = window.chart.data.datasets[1];
+      dataset.backgroundColor = gradientHoverBlue;
+      window.chart.update();
+      canvas.style.cursor = 'pointer';
+    } else {
+    	var dataset = window.chart.data.datasets[1];
+      dataset.backgroundColor = gradientBlue;
+      window.chart.update();
+      canvas.style.cursor = 'default';
+    }
+  }
+});
+
+window.chart = new Chart(document.getElementById("canvas"), {
+    type: "radar",
+    data: {
+        labels: ["STA", "STR", "AGI", "VIT", "CHA", "INT"],
+        datasets: [{
+            label: "Donté Panlin",
+            data: [25, 59, 90, 81, 60, 82],
+            fill: true,
+            backgroundColor: gradientRed,
+            borderColor: 'transparent',
+            pointBackgroundColor: "transparent",
+            pointBorderColor: "transparent",
+            pointHoverBackgroundColor: "transparent",
+            pointHoverBorderColor: "transparent",
+            pointHitRadius: 50,
+        }, {
+            label: "Mireska Sunbreeze",
+            data: [40, 100, 40, 90, 40, 90],
+            fill: true,
+            backgroundColor: gradientBlue,
+            borderColor: "transparent",
+            pointBackgroundColor: "transparent",
+            pointBorderColor: "transparent",
+            pointHoverBackgroundColor: "transparent",
+            pointHoverBorderColor: "transparent",
+            pointHitRadius: 50,
+        }]
+    },
+    options: {
+    	legend: {
+      	display: false,
+      },
+      tooltips: {
+      	enabled: false,
+        custom: function(tooltip) {
+        		var tooltipEl = document.getElementById('tooltip');
+          	if (tooltip.body) {
+            	tooltipEl.style.display = 'block';
+              if (tooltip.body[0].lines && tooltip.body[0].lines[0]) {
+              	tooltipEl.innerHTML = tooltip.body[0].lines[0];
+              }
+            } else {
+            	setTimeout(function() {
+            		tooltipEl.style.display = 'none';
+              }, 500);
+            }
+        },
+      },
+      gridLines: {
+        display: false
+      },
+      scale: {
+         ticks: {
+         		maxTicksLimit: 1,
+            display: false,
+         }
+      }
+    },
+    plugins: [shadowed]
+});
+
+</script>
+
+
+<script>
+
+  var chart_circle,
+    intervals,
+    per_num;
+
+intervals = [];
+per_num = [];
+chart_circle = {
+	items : $('.circle-chart'),
+	set : function(obj, per, index){
+		var path,
+			pathLen,
+			perLen;
+
+		path = $('.chart-circle-progress').get(index);
+		//pathLen = Math.round(path.getTotalLength());
+		pathLen = Math.round((obj.outerHeight()) * 3.14);
+		perLen = Math.round(pathLen - (per*(pathLen/100)));
+		if(per == 0){
+			perLen = pathLen;
+		}else if(per > 50){
+			perLen += (per == 100) ? 5 : Math.round(pathLen / 10);
+		}
+		path.setAttribute('stroke-dasharray', pathLen);
+		path.setAttribute('stroke-dashoffset', pathLen);
+		setTimeout(function(){
+			chart_circle.num_evt(per, obj, index);
+			chart_circle.init(obj, path, perLen);
+		}, 100);
+	},
+	init : function(obj, path, perLen){
+		obj.addClass('active');
+		path.setAttribute('stroke-dashoffset', perLen);
+	},
+	num_evt : function(per, obj, index){
+		chart_circle.num_interval(per, obj, index);
+	},
+	num_interval : function(per, obj, index){
+		var interv,
+			per_box;
+
+		per_num[index] = 0;
+		interv = 1000/per;
+
+		// very slowly interv
+		if(interv > 50){
+			interv = 50;
+		}
+
+		per_box = obj.find('.per-num span');
+		intervals[index] = setInterval(function(){
+			chart_circle.num_set(obj, per_box, per, index);
+		}, interv);
+	},
+	num_set : function(obj, per_box, per, index){
+		if(per_num[index] >= per){
+			clearInterval(intervals[index]);
+		}
+
+		per_box.text(per_num[index]);
+		per_num[index]++;
+	},
+	call : function(){
+		chart_circle.items.each(function(index){
+			var per;
+
+			per = $(this).attr('data-percent');
+			chart_circle.set($(this), per, index);
+		});
+	}
+}
+
+chart_circle.call();
+</script>
+
+</body>
+
+
+</html>
+
+
