@@ -7,7 +7,7 @@
 
 {% block content %}
     <!-- Page content -->
-     <div class="container mt--10 pb-5" >
+<div class="container mt--10 pb-5" xmlns="http://www.w3.org/1999/html">
       <div class="row justify-content-center">
         <div class="col-lg-5 col-md-7">
           <div class="card bg-secondary shadow border-0">
@@ -34,30 +34,35 @@
 
                 {% csrf_token %}
 
+
                   <div class="inline-block">
-                    <label for="email" >E-mail</label>
-                    <input class="input " type="text" id="email" >
-                  </div>
-                  <div class="inline-block">
-                    <label for="nom" >Nom</label>
+                    <label for="nom" >Username </label>
                     <input class="input" type="text" id="nom"  >
                   </div>
-                  <div class="inline-block">
-                    <label for="prenom" >Prénom</label>
-                    <input class="input" type="text" id="prenom"  >
+
+                <div class="inline-block">
+                    <label for="email" >E-mail</label>
+                    <input class="input" type="email" id="email" >
                   </div>
+                <span class="error" id="erroremail"></span>
                   <div class="inline-block">
-                    <label for="entreprise" >Entreprise</label>
-                    <input class="input" type="text" id="entreprise"  >
+                    <label for="entreprise" >Raison sociale</label>
+                    <input class="input" type="text" id="entreprise" >
+                  </div>
+                <div class="inline-block">
+                    <label for="num" >N° fiscale</label>
+                    <input class="input" type="text" id="num" >
                   </div>
                   <div class="inline-block">
                     <label for="mdp" >Mot de passe</label>
-                    <input class="input" type="password" id="mdp"  >
+                    <input class="input" type="password" id="mdp" >
+
                   </div>
+                <span class="error" id="errormdp"></span>
 
                 <br>
                 <div class="text-center">
-                  <button type="submit" class="btn btn-primary my-4">Se connecter</button>
+                  <a href="#" id="btn" class="btn btn-primary my-4">S'inscrire</a>
                 </div>
               </form>
             </div>
@@ -70,4 +75,175 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+
+<script>
+var faible=0;
+var username = document.getElementById("nom");
+    var entreprise = document.getElementById("entreprise");
+    var id_fisc = document.getElementById("num");
+    var email = document.getElementById("email");
+    var mdp = document.getElementById("mdp");
+
+$('#mdp').bind('change', function() {
+
+mdp= document.getElementById('mdp');
+str=mdp.value;
+
+if (str.match( /[0-9]/g) &&
+                    str.match( /[A-Z]/g) &&
+                    str.match(/[a-z]/g) &&
+                    str.match( /[^a-zA-Z\d]/g) &&
+                    str.length >= 10)
+               { msg = "";
+               mdp.classList.remove('false');
+                faible=0;}
+            else
+               {
+               mdp.classList.add('false');
+               msg = "<p class='error'><abbr title= 'Le mot de passe doit contenir Au moins 1 caractère majuscule. 1 caractère minuscule. 1 chiffre. 1 caractère spécial. Et au minimum 10 caractères. '> Mot de passe faible.</abbr></p>";
+                   faible=1; }
+    document.getElementById('errormdp').innerHTML=msg;
+
+});
+
+$('#nom').bind('change', function() {
+
+if( username.value == "") {
+         username.classList.add('false');
+         rep=1;
+    } else{ username.classList.remove('false'); }
+
+});
+
+$('#entreprise').bind('change', function() {
+
+if( entreprise.value == "") {
+         entreprise.classList.add('false');
+         rep=1;
+    } else{ entreprise.classList.remove('false'); }
+
+});
+
+$('#email').bind('change', function() {
+
+if( !email.value.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+         email.classList.add('false');
+         msg = "<p class='error'>Cet email n'est pas valide.</p>";
+                   faible=1;
+
+    } else{ email.classList.remove('false');
+     msg="";
+     faible=0;
+     }
+
+    document.getElementById('erroremail').innerHTML=msg;
+
+});
+
+$('#num').bind('change', function() {
+
+if( id_fisc.value == "") {
+         id_fisc.classList.add('false');
+         rep=1;
+    } else{ id_fisc.classList.remove('false'); }
+
+});
+
+
+
+
+
+
+  document.getElementById('btn').addEventListener('click',function(){
+
+
+    var rep=0;
+
+    if( username.value == "") {
+         username.classList.add('false');
+         rep=1;
+    } else{ username.classList.remove('false'); }
+    if( entreprise.value == "") {
+          entreprise.classList.add('false');
+          rep=1;
+    } else{entreprise.classList.remove('false'); }
+    if( id_fisc.value == "" ) {
+          id_fisc.classList.add('false');
+          rep=1;
+    } else{id_fisc.classList.remove('false'); }
+    if( email.value == "") {
+          email.classList.add('false');
+          rep=1;
+    } else{email.classList.remove('false'); }
+    if( mdp.value == "") {
+          mdp.classList.add('false');
+          rep=1;
+    } else{mdp.classList.remove('false'); }
+    if (rep == 1) { return; }
+    if(faible == 1) {return; }
+    var data = new FormData();
+    csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+	data.append("csrfmiddlewaretoken", csrf_token);
+	data.append("username",username.value);
+	data.append("entreprise",entreprise.value);
+	data.append("id_fisc", id_fisc.value);
+	data.append("email", email.value);
+	data.append("mdp",mdp.value);
+
+	             $.ajax({
+					    type: 'post',
+						url: '/inscription/', // point to server-side URL
+						dataType: 'json', // what to expect back from server
+						data: data,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (response) { // display success response
+
+                         if (response.err == 0){
+
+                           alert( "Inscription réussie");
+                           window.location.replace("/login/");
+
+                         }
+                         else {
+
+                         alert( response.erreur );
+
+                         }
+
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							                  var msg = '';
+
+                                  if (jqXHR.status === 0) {
+                                       msg = 'Not connect.\n Verify Network.';
+                                  } else if (jqXHR.status == 404) {
+                                       msg = 'Requested page not found. [404]';
+                                  } else if (jqXHR.status == 500) {
+                                       msg = 'Internal Server Error [500].';
+                                  } else if (exception === 'parsererror') {
+                                       msg = 'Requested JSON parse failed.';
+                                  } else if (exception === 'timeout') {
+                                       msg = 'Time out error.';
+                                  } else if (exception === 'abort') {
+                                       msg = 'Ajax request aborted.';
+                                  } else {
+                                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                  }
+					                   alert(msg);
+					    }
+					   });
+
+
+
+
+
+
+  });
+
+</script>
+
+
+{% endblock javascripts %}

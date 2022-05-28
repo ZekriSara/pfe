@@ -230,12 +230,23 @@ $('#chooseFile5').bind('change', function () {
 					var desc= document.getElementById('descriptif').value;
 					var version = document.getElementById('version').value;
 					var file= document.getElementById('chooseFile').files[0];
+
+
                     var remp= 1;
+
+
 					if(ins == "") {
 						$('#noFile').text("Veuillez séléctionner un fichier");
 						document.getElementById("file").classList.add('false');
 						remp=0;
-					} else{document.getElementById("file").classList.remove('false'); }
+					} else{document.getElementById("file").classList.remove('false');
+					type = file.type;
+					if (!( type == "text/csv")){
+                     alert("Veuillez séléctionner un fichier de type CSV");
+                     remp=0;
+                    }
+
+					}
 
 					  if(id== ""){
                         document.getElementById("id").classList.add('false');
@@ -277,7 +288,7 @@ $('#chooseFile5').bind('change', function () {
 						contentType: false,
 						processData: false,
 						success: function (response) { // display success response
-alert(response.msg);
+
 							if(response.msg==0){
                                document.getElementById("step1").classList.remove('is_showing');
                                document.getElementById("step2").classList.add('is_showing');
@@ -329,6 +340,7 @@ alert(response.msg);
 					var file1= document.getElementById('chooseFile1').files[0];
 					var file2= document.getElementById('chooseFile2').files[0];
 					var file3= document.getElementById('chooseFile3').files[0];
+					var id= document.getElementById('id').value;
                     var i=0;
                     var remp= 1;
 					if(ins == "") {
@@ -336,8 +348,17 @@ alert(response.msg);
 						alert("Etes vous sûr de ne vouloir sélectionner aucun fichier");
 						remp=0;
 					} else{document.getElementById("file1").classList.remove('false');
+
+					type = file1.type;
+					if (!( type == "text/csv")){
+                     alert("Veuillez séléctionner un fichier de type CSV");
+                     remp=0;
+                    }
+                    else{
 					       data.append('file1',file1);
 					       i=i+1;
+
+					       }
 					 }
 
 					 var ins = document.getElementById('chooseFile2').value;
@@ -345,20 +366,33 @@ alert(response.msg);
 						$('#noFile2').text("Veuillez séléctionner un fichier");
 						remp=0;
 					} else{document.getElementById("file2").classList.remove('false');
+
+					type = file2.type;
+					if (!( type == "text/csv")){
+                     alert("Veuillez séléctionner un fichier de type CSV");
+                     remp=0;
+                    } else {
 					       data.append('file2',file2);
-					       i=i+1;
+					       i=i+1; }
 					 }
 					 var ins = document.getElementById('chooseFile3').value;
 					 if(ins == "") {
 						$('#noFile3').text("Veuillez séléctionner un fichier");
 						remp=0;
 					} else{document.getElementById("file3").classList.remove('false');
+
+					type = file3.type;
+					if (!( type == "text/csv")){
+                     alert("Veuillez séléctionner un fichier de type CSV");
+                     remp=0;
+                    } else {
 					       data.append('file3',file3);
-					       i=i+1;
+					       i=i+1; }
 					 }
                     data.append("nbFile",i);
 					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 					data.append("csrfmiddlewaretoken", csrf_token);
+					data.append("id_norme", id);
 								$.ajax({
 					    type: 'post',
 						url: '/upload2/', // point to server-side URL
@@ -416,6 +450,7 @@ alert(response.msg);
 					var data = new FormData();
 					var ins = document.getElementById('chooseFile4').value;
 					var file= document.getElementById('chooseFile4').files[0];
+					var id= document.getElementById('id').value;
 
 					var file1= document.getElementById('chooseFile5').files[0];
 					var inss = document.getElementById('chooseFile5').value;
@@ -427,6 +462,12 @@ alert(response.msg);
 						remp=0;
 					} else{document.getElementById("file5").classList.remove('false');
 
+					type = file.type;
+					if (!( type == "text/csv")){
+                     alert("Veuillez séléctionner un fichier de type CSV");
+                     remp=0;
+                    }
+
 					 }
 
 					 if(inss == "") {
@@ -435,10 +476,17 @@ alert(response.msg);
 						remp=0;
 					} else{document.getElementById("file5").classList.remove('false');
 
+					type = file1.type;
+					if (!( type == "text/csv")){
+                     alert("Veuillez séléctionner un fichier de type CSV");
+                     remp=0;
+                    }
+
 					 }
                     if(remp==0){return;}
                      data.append('file',file);
                      data.append('file1',file1);
+                     data.append('id_norme',id);
 
 
 					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();

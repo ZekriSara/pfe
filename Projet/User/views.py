@@ -1,10 +1,18 @@
+import json
 from datetime import datetime
 
-from .models import Norme, Chapitre, Point, Question_Generale, SC_niv1, SC_niv2, SC_niv3, Reponse, Test
+from django.conf.global_settings import LOGIN_REDIRECT_URL
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from django.urls import reverse
+
+from .models import Norme, Chapitre, Point, Question, SC_niv1, SC_niv2, SC_niv3, Reponse, Test, Client
 
 import codecs
 from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.core.files.storage import FileSystemStorage, default_storage
 from pprint import pprint
@@ -15,74 +23,196 @@ from django.conf import settings
 import sys
 import pandas as pd
 
+
 # Auth side views
 
-def login(request):
-    return render(request,"Admin/accounts/login.html")
+def log(request):
+    return render(request, "Admin/accounts/login.html")
+
+
 def register(request):
-    return render(request,"Admin/accounts/register.html")
+    return render(request, "Admin/accounts/register.html")
+
+
+def khra(request):
+    normes = Norme.objects.all()
+    for n in normes:
+        n.delete()
+
+    return render(request, "quizz.html")
+
+
+@ensure_csrf_cookie
+def reg(request):
+    username = request.POST.get('username')
+    entreprise = request.POST.get('entreprise')
+    id_fisc = request.POST.get('id_fisc')
+    email = request.POST.get('email')
+    mdp = request.POST.get('mdp')
+    err = 0
+
+    if User.objects.filter(username=username).exists():
+        err = 1
+        erreur = "Ce Username est déjà utilisé."
+        data = {
+            'err': err,
+            'erreur': erreur
+        }
+        return JsonResponse(data)
+
+    if User.objects.filter(email=email).exists():
+        err = 1
+        erreur = "Cet email est déjà utilisé."
+        data = {
+            'err': err,
+            'erreur': erreur
+        }
+        return JsonResponse(data)
+
+    u = User()
+    u.username = username
+    u.email = email
+    u.set_password(mdp)
+    u.is_active = True
+    u.save()
+
+    c = Client()
+    c.id_user = u
+    c.raison = entreprise
+    c.num_fisc = id_fisc
+    c.save()
+
+    data = {
+        'err': err,
+
+    }
+
+    return JsonResponse(data)
+
+
+@ensure_csrf_cookie
+def cnx(request):
+    err = 0
+    email = request.POST.get("email")
+    mdp = request.POST.get("mdp")
+
+    if User.objects.filter(email=email).exists():
+        user = User.objects.get(email=email)
+        hash = make_password(mdp)
+        valid = user.check_password(mdp)
+        if not valid:
+            err = 1
+            erreur = "Email ou mot de passe erronés"
+            data = {
+                "err": err,
+                "erreur": erreur,
+
+            }
+            return JsonResponse(data)
+
+        else:
+            login(request, user)
+            assert user.is_authenticated
+            request.session["user"] = user.username
+            request.user = user
+            data = {
+                "err": err
+
+            }
+            return JsonResponse(data)
+
 
 # Client side views
 
-
 def index(request):
-
-    normes=Norme.objects.all()
-    tests=Test.objects.all()
-
-
-
-
-    #for n in normes:
-      #  n.delete()
-
-
-
-    context={
-        'normes':normes,
-        'tests':tests
-    }
-    return render(request, "index.html",context)
-
-def quizz(request,id):
-    test= Test()
-    test.id_norme= Norme.objects.get(id=id)
-    test.finished= False
-    test.date= datetime.now()
-    test.save()
-
-    test=str(test.id_test)
-    link= "/quizz/"+id+"/"+test
-    return redirect(link)
-
-def quizz2(request,id, test):
     normes = Norme.objects.all()
-    points = Point.objects.all()
-    chapitres = Chapitre.objects.all()
-    questions = Question_Generale.objects.all()
-    i = len(questions)
-    id= test
-
-
-
-    t= Test.objects.get(id_test=id)
-
-    if t.last_point == None:
-        p = Point.objects.first()
-    else:
-        p= Point.objects.get(id_point=t.last_point)
+    tests = Test.objects.all()
+    us = User.objects.all()
+    # for u in us:
+    #    if u.username != "admin":
+    #        u.delete()
+    # for n in normes:
+    # n.delete()
 
     context = {
         'normes': normes,
-        'chapitres': chapitres,
-        'points': points,
-        'questions': questions,
-        'point':p,
-        'i': i,
-        'id_test':id
+        'tests': tests,
+        'user': request.user
     }
+    if "user" not in request.session:
+        return redirect('/login/')
 
-    return render(request, "quizz.html", context)
+    else:
+        return render(request, "index.html", context)
+
+
+def hist(request):
+    test = Test.objects.all()
+
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        return render(request, "history.html", context={'test': test})
+
+
+def quizz(request, id):
+    if "user" not in request.session:
+        return redirect('/login/')
+    else:
+        test = Test()
+        test.id_norme = Norme.objects.get(id=id)
+        u = request.session["user"]
+        test.id_client = User.objects.get(username=u)
+        test.finished = False
+        test.date = datetime.now()
+        test.save()
+
+        test = str(test.id_test)
+        link = "/quizz/" + id + "/" + test
+
+        if "user" not in request.session:
+            return redirect('/login/')
+
+        else:
+            return redirect(link)
+
+
+
+
+def quizz2(request, id, test):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        normes = Norme.objects.all()
+        points = Point.objects.all()
+        chapitres = Chapitre.objects.all()
+        questions = Question.objects.all()
+        i = len(questions)
+        id = test
+
+        t = Test.objects.get(id_test=id)
+
+        if t.last_point == None:
+            p = Point.objects.first()
+        else:
+            p = Point.objects.get(id_point=t.last_point)
+
+
+        context = {
+            'normes': normes,
+            'chapitres': chapitres,
+            'points': points,
+            'questions': questions,
+            'point': p,
+            'i': i,
+            'id_test': id
+        }
+
+        return render(request, "quizz.html", context)
+
+
 
 
 def point_suivant(p):
@@ -100,8 +230,10 @@ def point_suivant(p):
         incr = str(incr)
         id = id + incr
     return id
+
+
 def tailleMinus2(p):
-    taille=len(p)
+    taille = len(p)
     incr = int(p[taille - 2])
     incr = incr + 1
     id = ""
@@ -115,8 +247,10 @@ def tailleMinus2(p):
         incr = str(incr)
         id = id + incr
     return id
+
+
 def tailleMinus3(p):
-    taille=len(p)
+    taille = len(p)
     incr = int(p[taille - 3])
     incr = incr + 1
     id = ""
@@ -130,8 +264,10 @@ def tailleMinus3(p):
         incr = str(incr)
         id = id + incr
     return id
+
+
 def tailleMinus4(p):
-    taille=len(p)
+    taille = len(p)
     incr = int(p[taille - 4])
     incr = incr + 1
     id = ""
@@ -145,8 +281,10 @@ def tailleMinus4(p):
         incr = str(incr)
         id = id + incr
     return id
+
+
 def tailleMinus5(p):
-    taille=len(p)
+    taille = len(p)
     incr = int(p[taille - 5])
     incr = incr + 1
     id = ""
@@ -160,20 +298,22 @@ def tailleMinus5(p):
         incr = str(incr)
         id = id + incr
     return id
+
+
 def codeHtmlQuestion(point_actu):
-    #conditionn si question existe sinon question generale
+    # conditionn si question existe sinon question generale
     i = 1
-    quizz=""
-    questions = Question_Generale.objects.filter(id_norme=point_actu.id_norme)
+    quizz = ""
+    questions = Question.objects.filter(id_norme=point_actu.id_norme)
     for q in questions:
         rep = ('<li>' +
                '<div class="inline-block">' +
                '<div class="question">' + q.question + '</div>' +
                '<div class="check">' +
                '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
-                    i) + '" value="' + point_actu.id_point + '/' + q.id_qst + '/oui"> Oui </label> &nbsp;&nbsp;' +
+                    i) + '" value="oui"> Oui </label> &nbsp;&nbsp;' +
                '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
-                    i) + '" value="' + point_actu.id_point + '/' + q.id_qst + '/non"> Non </label>' +
+                    i) + '" value="non"> Non </label>' +
                '</div>' +
                '<div class="comment">' +
                '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
@@ -183,9 +323,11 @@ def codeHtmlQuestion(point_actu):
         quizz = quizz + rep
         i = i + 1
     return quizz
-def dataReturnNextChap(point_actu,end):
+
+
+def dataReturnNextChap(point_actu, end):
     quizz = codeHtmlQuestion(point_actu)
-    id_chap= point_actu.id_chap.id_chap
+    id_chap = point_actu.id_chap.id_chap
     chap_actu = Chapitre.objects.get(id_chap=id_chap)
     if point_actu.id_Sc1 == None:
         data = {'quizz': quizz,
@@ -249,8 +391,9 @@ def dataReturnNextChap(point_actu,end):
                         }
 
     return data
-def dataReturnNextSC1(point_actu,end):
 
+
+def dataReturnNextSC1(point_actu, end):
     if point_actu.id_Sc2 == None:
         sc1 = SC_niv1.objects.filter(id_Sc1=point_actu.id_Sc1.id_Sc1)
         data = {'quizz': quizz,
@@ -297,36 +440,39 @@ def dataReturnNextSC1(point_actu,end):
                     }
 
     return data
-def dataReturnNextSC2(point_actu,end):
 
-        if point_actu.id_Sc3 == None:
-            sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
-            data = {'quizz': quizz,
-                    'point': point_actu.titre,
-                    'point_descri': point_actu.point,
-                    'id': point_actu.id_point,
-                    'sc2': sc2.titre,
-                    'sc2_des': sc2.objectif,
-                    'end': end,
-                    'cas': 2
-                    }
-        else:
-            sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
-            sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
-            data = {'quizz': quizz,
-                    'point': point_actu.titre,
-                    'point_descri': point_actu.point,
-                    'id': point_actu.id_point,
-                    'sc2': sc2.titre,
-                    'sc2_des': sc2.objectif,
-                    'sc3': sc3.titre,
-                    'sc3_des': sc3.objectif,
-                    'end': end,
-                    'cas': 2
-                    }
 
-        return data
-def dataReturnNextSC3(point_actu,end):
+def dataReturnNextSC2(point_actu, end):
+    if point_actu.id_Sc3 == None:
+        sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+        data = {'quizz': quizz,
+                'point': point_actu.titre,
+                'point_descri': point_actu.point,
+                'id': point_actu.id_point,
+                'sc2': sc2.titre,
+                'sc2_des': sc2.objectif,
+                'end': end,
+                'cas': 2
+                }
+    else:
+        sc2 = SC_niv2.objects.filter(id_Sc2=point_actu.id_Sc2.id_Sc2)
+        sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
+        data = {'quizz': quizz,
+                'point': point_actu.titre,
+                'point_descri': point_actu.point,
+                'id': point_actu.id_point,
+                'sc2': sc2.titre,
+                'sc2_des': sc2.objectif,
+                'sc3': sc3.titre,
+                'sc3_des': sc3.objectif,
+                'end': end,
+                'cas': 2
+                }
+
+    return data
+
+
+def dataReturnNextSC3(point_actu, end):
     sc3 = SC_niv2.objects.filter(id_Sc3=point_actu.id_Sc3.id_Sc3)
     data = {'quizz': quizz,
             'point': point_actu.titre,
@@ -338,97 +484,186 @@ def dataReturnNextSC3(point_actu,end):
             'cas': 1
             }
     return data
+
+def pointPrec(point_actu):
+    trouv=False
+
+    points=Point.objects.filter(id_norme=point_actu.id_norme.id).all()
+    point_prec=Point.objects.filter(id_norme=point_actu.id_norme.id).first()
+    for p in points:
+        if p.id_point == point_actu.id_point:
+            trouv=True
+        if trouv== False:
+            point_prec=p
+
+    return point_prec
+def qstPointPrec(point,test):
+    i=1
+    quizz=""
+    questions = Question.objects.filter(id_norme=point.id_norme).all()
+
+    for q in questions:
+        rep = Reponse.objects.filter(id_point=point.id_point, id_test=test.id_test,id_qst=q.id_qst).get()
+
+        if rep.reponse== True:
+            r = ('<li>' +
+                 '<div class="inline-block">' +
+                 '<div class="question">' + q.question + '</div>' +
+                 '<div class="check">' +
+                 '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
+                        i) + '" value="oui" checked> Oui </label> &nbsp;&nbsp;' +
+                 '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
+                        i) + '" value="non"> Non </label>' +
+                 '</div>' +
+                 '<div class="comment">' +
+                 '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
+                 '</div>' +
+                 '</div>' +
+                 '</li>')
+        else:
+            r = ('<li>' +
+                 '<div class="inline-block">' +
+                 '<div class="question">' + q.question + '</div>' +
+                 '<div class="check">' +
+                 '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
+                        i) + '" value="oui"> Oui </label> &nbsp;&nbsp;' +
+                 '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
+                        i) + '" value="non" checked> Non </label>' +
+                 '</div>' +
+                 '<div class="comment">' +
+                 '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
+                 '</div>' +
+                 '</div>' +
+                 '</li>')
+        quizz = quizz + r
+        i = i + 1
+    return quizz
+
+def prec(request):
+
+    id_point=request.GET.get('point')
+    id_test=request.GET.get('test')
+
+    point_actu=Point.objects.get(id_point=id_point)
+
+    point_prec=pointPrec(point_actu)
+    #return JsonResponse({"msg":point_prec.id_point})
+    test=Test.objects.get(id_test=id_test)
+
+    quizz=qstPointPrec(point_prec,test)
+
+    data={
+        'quizz': quizz,
+        'point': point_prec.titre,
+        'point_descri': point_prec.point,
+        'id': point_prec.id_point,
+        'chap': point_prec.id_chap.titre,
+        'chap_des': point_prec.id_chap.descriptif,
+
+    }
+
+    return JsonResponse(data)
+
+
+
+
+
+
+
+
+
 def maj(request):
-    #sauvegarde de réponse
-    rep= request.GET.get('rep')
-    com=request.GET.get('com')
+    # sauvegarde de réponse
+    rep = request.GET.get('rep')
+    com = request.GET.get('com')
     point_id = request.GET.get('point')
-    test= request.GET.get('test')
+    test = request.GET.get('test')
 
     pre = Point.objects.get(id_point=point_id)
-    rep= rep.split(';')
-    com= com.split(';')
-    taille=len(rep)
+    rep = rep.split(';')
+    com = com.split(';')
+    taille = len(rep)
     for i in range(taille):
-        r= Reponse()
-        incr= str(i+1)
-        r.id_test= Test.objects.get(id_test= test)
-        #id_qst= pre.id_norme + "_" + incr
-        id_qst= str(i+1)
-        r.id_qst = Question_Generale.objects.get(id_qst=id_qst)
-        r.id_reponse=id_qst
-        r.id_point= pre
-        r.id_chap= pre.id_chap
-        r.id_Sc1= pre.id_Sc1
+        r = Reponse()
+        incr = str(i + 1)
+        r.id_test = Test.objects.get(id_test=test)
+        id_qst= pre.id_norme.id + "_0" + incr
+        r.id_qst = Question.objects.get(id_qst=id_qst)
+        r.id_reponse = pre.id_point +  "_0" + incr
+        r.id_point = pre
+        r.id_chap = pre.id_chap
+        r.id_Sc1 = pre.id_Sc1
         r.id_Sc2 = pre.id_Sc2
         r.id_Sc3 = pre.id_Sc3
-        r.id_norme= Norme.objects.get(id=pre.id_norme.id)
+        r.id_norme = Norme.objects.get(id=pre.id_norme.id)
         r.version = pre.version
-        r.comment= com[i]
+        r.comment = com[i]
         if rep[i] == "oui":
-            r.reponse= True
-        else :
+            r.reponse = True
+        else:
             r.reponse = False
 
         r.save()
 
-
-    t= Test.objects.get(id_test=test)
-    t.last_point= pre.id_point
+    t = Test.objects.get(id_test=test)
+    t.last_point = pre.id_point
     t.save()
 
-#Récupération et incrémentation
+    # Récupération et incrémentation
 
     p = point_id.split('_')
-    taille= len(p)
-    id_point=point_suivant(p)
-    end=0
+    taille = len(p)
+    id_point = point_suivant(p)
+    end = 0
 
-# Next point exists
+    # Next point exists
     if Point.objects.filter(id_point=id_point).exists():
         point_actu = Point.objects.get(id_point=id_point)
-        quizz=codeHtmlQuestion(point_actu)
+        quizz = codeHtmlQuestion(point_actu)
         data = {'quizz': quizz,
                 'point': point_actu.titre,
                 'point_descri': point_actu.point,
                 'id': point_actu.id_point,
                 'end': end,
-                'cas':0
+                'cas': 0
                 }
-    else: #NEXT SOUS CHAPITRE
-        if taille== 6:
-            id_sc3= tailleMinus2(p)
+    else:  # NEXT SOUS CHAPITRE
+        if taille == 6:
+            id_sc3 = tailleMinus2(p)
             if SC_niv3.objects.filter(id_Sc3=id_sc3).exists():
-                point_actu = Point.objects.filter(id_Sc3=id_sc3,id_Sc2=pre.id_Sc2.id_Sc2,id_Sc1=pre.id_Sc1.id_Sc1, id_chap=pre.id_chap.id_chap).first()
+                point_actu = Point.objects.filter(id_Sc3=id_sc3, id_Sc2=pre.id_Sc2.id_Sc2, id_Sc1=pre.id_Sc1.id_Sc1,
+                                                  id_chap=pre.id_chap.id_chap).first()
                 data = dataReturnNextSC3(point_actu, end)
                 return JsonResponse(data)
             else:
-                id_sc2= tailleMinus3(p)
+                id_sc2 = tailleMinus3(p)
                 if SC_niv2.objects.filter(id_Sc2=id_sc2).exists():
-                    point_actu = Point.objects.filter(id_Sc2=id_sc2, id_Sc1=pre.id_Sc1.id_Sc1,id_chap=pre.id_chap.id_chap).first()
+                    point_actu = Point.objects.filter(id_Sc2=id_sc2, id_Sc1=pre.id_Sc1.id_Sc1,
+                                                      id_chap=pre.id_chap.id_chap).first()
                     data = dataReturnNextSC2(point_actu, end)
                     return JsonResponse(data)
                 else:
-                    id_sc1= tailleMinus4(p)
+                    id_sc1 = tailleMinus4(p)
                     if SC_niv1.objects.filter(id_Sc1=id_sc1).exists():
-                        point_actu = Point.objects.filter( id_Sc1=id_sc1, id_chap=pre.id_chap.id_chap).first()
+                        point_actu = Point.objects.filter(id_Sc1=id_sc1, id_chap=pre.id_chap.id_chap).first()
                         data = dataReturnNextSC1(point_actu, end)
                         return JsonResponse(data)
                     else:
-                        id_chap= tailleMinus5(p)
+                        id_chap = tailleMinus5(p)
                         if Chapitre.objects.filter(id_chap=id_chap).exists():
                             point_actu = Point.objects.filter(id_chap=id_chap).first()
                             data = dataReturnNextChap(point_actu, end)
                             return JsonResponse(data)
                         else:
                             end = 1
-                            #fin
+                            # fin
 
-        if taille== 5:
+        if taille == 5:
             id_sc2 = tailleMinus2(p)
             if SC_niv2.objects.filter(id_Sc2=id_sc2).exists():
-                point_actu=Point.objects.filter(id_Sc2=id_sc2,id_Sc1=pre.id_Sc1.id_Sc1,id_chap=pre.id_chap.id_chap).first()
-                data= dataReturnNextSC2(point_actu,end)
+                point_actu = Point.objects.filter(id_Sc2=id_sc2, id_Sc1=pre.id_Sc1.id_Sc1,
+                                                  id_chap=pre.id_chap.id_chap).first()
+                data = dataReturnNextSC2(point_actu, end)
                 return JsonResponse(data)
             else:
                 id_sc1 = tailleMinus3(p)
@@ -446,95 +681,174 @@ def maj(request):
                         end = 1
                         # fin
 
-        if taille== 4:
-            id_sc1= tailleMinus2(p)
-            id_chap= pre.id_chap.id_chap
+        if taille == 4:
+            id_sc1 = tailleMinus2(p)
+            id_chap = pre.id_chap.id_chap
             if SC_niv1.objects.filter(id_Sc1=id_sc1).exists():
                 point_actu = Point.objects.filter(id_chap=id_chap, id_sc1=id_sc1).first()
-                data = dataReturnNextSC1(point_actu,end)
+                data = dataReturnNextSC1(point_actu, end)
                 return JsonResponse(data)
-            else: #NEXT CHAPITRE
-                id_chap= tailleMinus3(p)
+            else:  # NEXT CHAPITRE
+                id_chap = tailleMinus3(p)
                 if Chapitre.objects.filter(id_chap=id_chap).exists():
-                    point_actu=Point.objects.filter(id_chap=id_chap).first()
-                    data= dataReturnNextChap(point_actu,end)
+                    point_actu = Point.objects.filter(id_chap=id_chap).first()
+                    data = dataReturnNextChap(point_actu, end)
                     return JsonResponse(data)
                 else:
-                    #FIN
-                    end=1
+                    # FIN
+                    end = 1
 
-
-        if taille==3:
+        if taille == 3:
             id_chap = tailleMinus2(p)
             if Chapitre.objects.filter(id_chap=id_chap).exists():
                 point_actu = Point.objects.filter(id_chap=id_chap).first()
-                data= dataReturnNextChap(point_actu,end)
+                data = dataReturnNextChap(point_actu, end)
                 return JsonResponse(data)
 
             else:
-                return JsonResponse({'end':1})
-
-
-
-
-
-
+                return JsonResponse({'end': 1})
 
     return JsonResponse(data)
 
-def resultat(request):
-    return render(request,"resultat.html")
 
+def resultat(request):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+
+        test = Test.objects.get(id_test=id)
+
+        if test.finished == True:
+            reponses = Reponse.objects.get(id_test=test.id_test)
+            comp = 0
+
+            for r in reponses:
+                if r.reponse == True:
+                    comp = comp + 1
+
+            pourcentage = (comp * 100) / len(reponses)
+
+            labels = []
+            values = []
+            i = 1
+
+            chapitres = Chapitre.objects.get(id_norme=test.id_norme.id)
+
+            for c in chapitres:
+                str = str(i)
+                lab = "Chap" + i
+                labels.append(lab)
+                comp = 0
+                reponses = Reponse.objects.get(id_chap=c.id_chap)
+                for r in reponses:
+                    if r.reponse == True:
+                        comp = comp + 1
+
+                val = (comp * 100) / len(reponses)
+                values.append(val)
+
+                i = i + 1
+            return render(request, "resultat.html",
+                          context={"labels": json.dumps(labels), "values": json.dumps(values)})
 
 
 # Admin side views
 
 
-
 def adminIndex(request):
-    return render(request,'Admin/home/index.html')
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            return render(request, 'Admin/home/index.html')
+        else:
+            return redirect("/home/")
+
 
 def userindex(request):
-    return render(request,"Admin/home/tables.html")
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            return render(request, "Admin/home/tables.html")
+        else:
+            return redirect("/home/")
+
+
 def ajouternorme(request):
-    return render(request,"Admin/home/ajouternorme.html")
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user= User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            return render(request, "Admin/home/ajouternorme.html")
+        else:
+            return redirect("/home/")
 
 
 def remplacer(file):
-    newtext=""
+    newtext = ""
     for char in file:
         newtext = newtext + char
-    newtext=newtext.replace("Ã´","ô")
-    newtext=newtext.replace("Ã©","é")
-    newtext=newtext.replace("Ã¨", "è")
-    newtext=newtext.replace("Ãª", "ê")
-    newtext=newtext.replace("Ã»", "û")
-    newtext=newtext.replace("Ã¹", "ù")
-    newtext=newtext.replace("Ã§", "ç")
-    newtext=newtext.replace("â€™", "'")
+    newtext = newtext.replace("Ã´", "ô")
+    newtext = newtext.replace("Ã©", "é")
+    newtext = newtext.replace("Ã¨", "è")
+    newtext = newtext.replace("Ãª", "ê")
+    newtext = newtext.replace("Ã»", "û")
+    newtext = newtext.replace("Ã¹", "ù")
+    newtext = newtext.replace("Ã§", "ç")
+    newtext = newtext.replace("â€™", "'")
 
-    newtext=newtext.replace("Ã","à")
+    newtext = newtext.replace("Ã", "à")
     return newtext
+
 
 def remplacer2(file):
-    newtext=""
+    newtext = ""
     for char in file:
         newtext = newtext + char
-    newtext=newtext.replace("“","ô")
-    newtext=newtext.replace("‚","é")
-    newtext=newtext.replace("Š", "è")
-    newtext=newtext.replace("ˆ", "ê")
-    newtext=newtext.replace("Ã»", "û")
-    newtext=newtext.replace("Ã¹", "ù")
-    newtext=newtext.replace("Ã§", "ç")
-    newtext=newtext.replace("?", "'")
+    newtext = newtext.replace("“", "ô")
+    newtext = newtext.replace("‚", "é")
+    newtext = newtext.replace("Š", "è")
+    newtext = newtext.replace("ˆ", "ê")
+    newtext = newtext.replace("ƒ", "û")
+    newtext = newtext.replace("–—", "ù")
+    newtext = newtext.replace("‡", "ç")
+    newtext = newtext.replace("?", "'")
 
-    newtext=newtext.replace("Ã","à")
+    newtext = newtext.replace("…", "à")
     return newtext
 
-def upload(request):
 
-    msg=1
+def remplacer3(file):
+    newtext = ""
+    for char in file:
+        newtext = newtext + char
+    newtext = newtext.replace("™", "ô")
+    newtext = newtext.replace("Ž", "é")
+    newtext = newtext.replace("ž", "û")
+
+    newtext = newtext.replace("ˆ", "à")
+    return newtext
+
+
+def codif(id, num):
+    i = int(num)
+    if i < 10:
+        result = id + "_0" + num
+    else:
+        result = id + "_" + num
+    return result
+
+
+def upload(request):
+    msg = 1
     file = request.FILES.get("file")
     name = file.name
     fss = FileSystemStorage()
@@ -543,56 +857,59 @@ def upload(request):
 
     FileModel.objects.create(doc=url)
 
+    file = open(os.path.join(settings.MEDIA_ROOT, filename), 'r', encoding='utf-8', errors='replace').read()
+    file = remplacer(file)
+    file = remplacer2(file)
+    file = remplacer3(file)
 
-    file = open(os.path.join(settings.MEDIA_ROOT, filename),'r').read()
-    file= remplacer(file)
+    # Récupération des valeurs de champ sasie
+    id = request.POST.get("id")
+    titre = request.POST.get("titre")
+    desc = request.POST.get("desc")
+    version = request.POST.get("version")
 
-    #Récupération des valeurs de champ sasie
-    id= request.POST.get("id")
-    titre=request.POST.get("titre")
-    desc=request.POST.get("desc")
-    version=request.POST.get("version")
-
-
-    #Remplissage de la base de données
-    norme= Norme()
-    norme.id=id
-    norme.titre=titre
-    norme.descriptif=desc
-    norme.version=int(version)
+    # Remplissage de la base de données
+    norme = Norme()
+    norme.id = id
+    norme.titre = titre
+    norme.descriptif = desc
+    norme.version = int(version)
 
     if Norme.objects.filter(id=id).exists():
-        er="Cet identifiant existe, veuillez saisir un autre identifiant."
-        return JsonResponse({"error": er,'msg':msg})
+        er = "Cet identifiant existe, veuillez saisir un autre identifiant."
+        return JsonResponse({"error": er, 'msg': msg})
     else:
         norme.save()
         rows = file.split("\n")
         taille = len(rows)
-        for i in range(1,taille):
-            columns = rows[i-1].split(";")
+        columns = rows[0].split(";")
+        if len(columns) != 3:
+            er = "Ce fichier ne possède pas le nombre de colonnes nécessaire pour remplir la table des chapitres."
+            return JsonResponse({"error": er, 'msg': msg})
+        for i in range(1, taille):
+            columns = rows[i - 1].split(";")
             chap = Chapitre()
             chap.id_norme = norme
             chap.version = norme.version
-            incr = str(i)
-            if i<10:
-                chap.id_chap = norme.id + "_0" + incr
-            else:
-                chap.id_chap = norme.id + "_" + incr
+            num_chap = columns[0]
+            chap.id_chap = codif(norme.id, num_chap)
             chap.titre = columns[1]
             chap.descriptif = columns[2]
             chap.save()
-        msg=0
+        msg = 0
 
+    return JsonResponse({'msg': msg})
 
-
-    return JsonResponse({'msg':msg})
 
 def upload2(request):
-    nbFile=request.POST.get("nbFile")
-    nbFile=int(nbFile)
+    nbFile = request.POST.get("nbFile")
+    id = request.POST.get("id_norme")
+    # return JsonResponse({"msg":1,"error":id})
+    norme = Norme.objects.get(id=id)
+    nbFile = int(nbFile)
     if (nbFile == 0):
-        msg=0
-        return JsonResponse({"msg":msg})
+        msg = 0
+        return JsonResponse({"msg": msg})
     if (nbFile >= 1):
         file1 = request.FILES.get("file1")
         name1 = file1.name
@@ -601,23 +918,26 @@ def upload2(request):
         url = fss.url(filename1)
         FileModel.objects.create(doc=url)
         file1 = open(os.path.join(settings.MEDIA_ROOT, filename1), 'r').read()
-        file1 = remplacer(file1)
+        file = remplacer(file1)
+        file = remplacer2(file)
+        file1 = remplacer3(file)
         rows1 = file1.split("\n")
 
         taille = len(rows1)
         for i in range(1, taille):
             souschap1 = SC_niv1()
             columns = rows1[i - 1].split(";")
-            souschap1.id_chap = Chapitre.objects.get(id_chap=columns[0])
-            souschap1.id_Sc1 = columns[1]
+            id_chap = codif(norme.id, columns[0])
+            souschap1.id_chap = Chapitre.objects.get(id_chap=id_chap)
+            num_sc1 = columns[0]
+            souschap1.id_Sc1 = codif(id_chap, num_sc1)
             souschap1.titre = columns[2]
             souschap1.objectif = columns[3]
-            souschap1.id_norme = Norme.objects.get(id=columns[4])
-            souschap1.version = columns[5]
+            souschap1.id_norme = norme
+            souschap1.version = norme.version
             souschap1.save()
 
-
-        if(nbFile >= 2):
+        if (nbFile >= 2):
             file2 = request.FILES.get("file2")
             name2 = file2.name
             fss = FileSystemStorage()
@@ -626,21 +946,25 @@ def upload2(request):
             FileModel.objects.create(doc=url)
 
             file2 = open(os.path.join(settings.MEDIA_ROOT, filename2), 'r').read()
-            file2 = remplacer(file2)
+            file = remplacer(file2)
+            file = remplacer2(file)
+            file2 = remplacer3(file)
             rows2 = file2.split("\n")
-
 
             taille = len(rows2)
             for i in range(1, taille):
                 souschap2 = SC_niv2()
                 columns = rows2[i - 1].split(";")
-                souschap2.id_chap = Chapitre.objects.get(id_chap=columns[0])
+                id_chap = codif(norme.id, columns[0])
+                souschap2.id_chap = Chapitre.objects.get(id_chap=id_chap)
+                id_sc1 = codif(id_chap, columns[1])
                 souschap2.id_Sc1 = SC_niv1.objects.get(id_Sc1=columns[1])
-                souschap2.id_Sc2=columns[2]
+                id_sc2 = codif(id_sc1, columns[2])
+                souschap2.id_Sc2 = id_sc2
                 souschap2.titre = columns[3]
                 souschap2.objectif = columns[4]
-                souschap2.id_norme = Norme.objects.get(id=columns[5])
-                souschap2.version = columns[6]
+                souschap2.id_norme = norme
+                souschap2.version = norme.version
                 souschap2.save()
 
             if (nbFile == 3):
@@ -651,30 +975,38 @@ def upload2(request):
                 url = fss.url(filename3)
                 FileModel.objects.create(doc=url)
                 file3 = open(os.path.join(settings.MEDIA_ROOT, filename3), 'r').read()
-                file3 = remplacer(file3)
+                file = remplacer(file3)
+                file = remplacer2(file)
+                file3 = remplacer3(file)
                 rows3 = file3.split("\n")
 
                 taille = len(rows3)
                 for i in range(1, taille):
                     souschap3 = SC_niv3()
                     columns = rows3[i - 1].split(";")
-                    souschap3.id_chap = Chapitre.objects.get(id_chap=columns[0])
-                    souschap3.id_Sc1 = SC_niv1.objects.get(id_Sc1=columns[1])
-                    souschap3.id_Sc2 = SC_niv2.objects.get(id_Sc2=columns[2])
-                    souschap3.id_Sc3 = columns[3]
+                    id_chap = codif(norme.id, columns[0])
+                    souschap3.id_chap = Chapitre.objects.get(id_chap=id_chap)
+                    id_sc1 = codif(id_chap, columns[1])
+                    souschap3.id_Sc1 = SC_niv1.objects.get(id_Sc1=id_sc1)
+                    id_sc2 = codif(id_sc1, columns[2])
+                    souschap3.id_Sc2 = SC_niv2.objects.get(id_Sc2=id_sc2)
+                    id_sc3 = codif(id_sc2, columns[3])
+                    souschap3.id_Sc3 = id_sc3
                     souschap3.titre = columns[4]
                     souschap3.objectif = columns[5]
-                    souschap3.id_norme = Norme.objects.get(id=columns[6])
-                    souschap3.version = columns[7]
+                    souschap3.id_norme = norme
+                    souschap3.version = norme.version
                     souschap3.save()
 
+    return JsonResponse({"msg": 0})
 
-    return JsonResponse({"msg":0})
 
 def upload3(request):
+    id = request.POST.get("id_norme")
+    norme = Norme.objects.get(id=id)
 
-    file= request.FILES.get('file')
-    file1= request.FILES.get('file1')
+    file = request.FILES.get('file')
+    file1 = request.FILES.get('file1')
     name = file.name
     fss = FileSystemStorage()
     filename = fss.save(name, file)
@@ -683,76 +1015,103 @@ def upload3(request):
 
     file = open(os.path.join(settings.MEDIA_ROOT, filename), 'r').read()
     file = remplacer(file)
+    file = remplacer2(file)
+    file = remplacer3(file)
     rows = file.split("\n")
     taille = len(rows)
 
     for i in range(1, taille):
 
-        point=Point()
+        point = Point()
         columns = rows[i - 1].split(";")
 
-
-        if(len(columns) == 6):
-            point.id_chap=Chapitre.objects.get(id_chap=columns[0])
-            point.id_point=columns[1]
-            point.titre=columns[2]
-            point.point=columns[3]
-            point.id_norme=Norme.objects.get(id=columns[4])
-            point.version=columns[5]
+        if (len(columns) == 4):
+            id_chap = codif(norme.id, columns[0])
+            point.id_chap = Chapitre.objects.get(id_chap=id_chap)
+            id_point = codif(id_chap, columns[1])
+            point.id_point = id_point
+            point.titre = columns[2]
+            point.point = columns[3]
+            point.id_norme = norme
+            point.version = norme.version
             point.save()
 
-        if(len(columns) == 7):
-            point.id_chap=Chapitre.objects.get(id_chap=columns[0])
-            if columns[1] == "":
-                point.id_Sc1= None
-            else:
-                point.id_Sc1= SC_niv1.objects.get(id_Sc1=columns[1])
-            point.id_point=columns[2]
-            point.titre=columns[3]
-            point.point=columns[4]
-            point.id_norme=Norme.objects.get(id=columns[5])
-            point.version=columns[6]
-            point.save()
-
-        if (len(columns) == 8):
-            point.id_chap = Chapitre.objects.get(id_chap=columns[0])
+        if (len(columns) == 5):
+            id_chap = codif(norme.id, columns[0])
+            point.id_chap = Chapitre.objects.get(id_chap=id_chap)
             if columns[1] == "":
                 point.id_Sc1 = None
+                id_point = codif(id_chap, columns[2])
+                point.id_point = id_point
             else:
-                point.id_Sc1 = SC_niv1.objects.get(id_Sc1=columns[1])
-            if columns[2] == "":
-                point.id_Sc2 = None
-            else:
-                point.id_Sc2 = SC_niv2.objects.get(id_Sc2=columns[2])
+                id_sc1 = codif(id_chap, columns[1])
+                point.id_Sc1 = SC_niv1.objects.get(id_Sc1=id_sc1)
+                id_point = codif(id_sc1, columns[2])
+                point.id_point = id_point
+            point.titre = columns[3]
+            point.point = columns[4]
+            point.id_norme = Norme.objects.get(id=columns[5])
+            point.version = columns[6]
+            point.save()
 
-            point.id_point = columns[3]
+        if (len(columns) == 6):
+            id_chap = codif(norme.id, columns[0])
+            point.id_chap = Chapitre.objects.get(id_chap=id_chap)
+            if columns[1] == "":
+                point.id_Sc1 = None
+                id_point = codif(id_chap, columns[3])
+                point.id_point = id_point
+            else:
+                id_sc1 = codif(id_chap, columns[1])
+                point.id_Sc1 = SC_niv1.objects.get(id_Sc1=id_sc1)
+                if columns[2] == "":
+                    point.id_Sc2 = None
+                    id_point = codif(id_sc1, columns[3])
+                    point.id_point = id_point
+                else:
+                    id_sc2 = codif(id_sc1, columns[2])
+                    point.id_Sc2 = SC_niv2.objects.get(id_Sc2=id_sc2)
+                    id_point = codif(id_sc2, columns[3])
+                    point.id_point = id_point
+
             point.titre = columns[4]
             point.point = columns[5]
-            point.id_norme = Norme.objects.get(id=columns[6])
-            point.version = columns[7]
+            point.id_norme = norme
+            point.version = norme.version
             point.save()
 
-        if (len(columns) == 9):
-            point.id_chap = Chapitre.objects.get(id_chap=columns[0])
+        if (len(columns) == 7):
+            id_chap = codif(norme.id, columns[0])
+            point.id_chap = Chapitre.objects.get(id_chap=id_chap)
             if columns[1] == "":
                 point.id_Sc1 = None
+                id_point = codif(id_chap, columns[4])
+                point.id_point = id_point
             else:
-                point.id_Sc1 = SC_niv1.objects.get(id_Sc1=columns[1])
-            if columns[2] == "":
-                point.id_Sc2 = None
-            else:
-                point.id_Sc2 = SC_niv2.objects.get(id_Sc2=columns[2])
-            if columns[3] == "":
-                point.id_Sc3 = None
-            else:
-                point.id_Sc3 = SC_niv3.objects.get(id_Sc3=columns[3])
-            point.id_point = columns[4]
+                id_sc1 = codif(id_chap, columns[1])
+                point.id_Sc1 = SC_niv1.objects.get(id_Sc1=id_sc1)
+                if columns[2] == "":
+                    point.id_Sc2 = None
+                    id_point = codif(id_sc1, columns[4])
+                    point.id_point = id_point
+                else:
+                    id_sc2 = codif(id_sc1, columns[2])
+                    point.id_Sc2 = SC_niv2.objects.get(id_Sc2=id_sc2)
+                    if columns[3] == "":
+                        point.id_Sc3 = None
+                        id_point = codif(id_sc2, columns[4])
+                        point.id_point = id_point
+                    else:
+                        id_sc3 = codif(id_sc2, columns[3])
+                        point.id_Sc3 = SC_niv3.objects.get(id_Sc3=id_sc3)
+                        id_point = codif(id_sc3, columns[4])
+                        point.id_point = id_point
+
             point.titre = columns[5]
             point.point = columns[6]
-            point.id_norme = Norme.objects.get(id=columns[7])
-            point.version = columns[8]
+            point.id_norme = norme
+            point.version = norme.version
             point.save()
-
 
     name1 = file1.name
     fss = FileSystemStorage()
@@ -760,28 +1119,100 @@ def upload3(request):
     url = fss.url(filename1)
     FileModel.objects.create(doc=url)
     file1 = open(os.path.join(settings.MEDIA_ROOT, filename1), 'r').read()
-    file1 = remplacer(file1)
+    file = remplacer(file1)
+    file = remplacer2(file)
+    file1 = remplacer3(file)
     rows1 = file1.split("\n")
     taille = len(rows1)
 
-    columns1 = rows1[0].split(";")
-
-    if len(columns1) == 3:
-        for i in range(1, taille):
-            columns1 = rows1[i-1].split(";")
-            qst = Question_Generale()
-            qst.id_qst = columns1[0]
-            qst.id_norme = Norme.objects.get(id=columns1[1])
+    for i in range(1, taille):
+        columns1 = rows1[i - 1].split(";")
+        if len(columns1) == 3:
+            qst = Question()
+            id_qst = codif(norme.id, columns1[0])
+            qst.id_qst = id_qst
+            qst.id_norme = norme
             qst.question = columns1[2]
+            qst.version = norme.version
             qst.save()
 
+        if (len(columns1) == 4):
+            id_chap = codif(norme.id, columns1[0])
+            id_point = codif(id_chap, columns1[1])
+            id_qst = codif(id_point, columns1[2])
+            qst = Question()
+            qst.id_qst = id_qst
+            qst.id_point = id_point
+            qst.question = columns[4]
+            qst.id_norme = norme
+            qst.version = norme.version
+            qst.save()
 
-        ##remplissage qst generales
+        if (len(columns1) == 5):
 
-    #if len(columns) == 8:
-        #remplissage qst
+            id_chap = codif(norme.id, columns1[0])
+            if columns[1] == "":
+                id_point = codif(id_chap, columns1[2])
+            else:
+                id_sc1 = codif(id_chap, columns1[1])
+                id_point = codif(id_sc1, columns1[2])
 
+            id_qst = codif(id_point, columns1[3])
+            qst = Question()
+            qst.id_qst = id_qst
+            qst.id_point = id_point
+            qst.question = columns1[4]
+            qst.id_norme = norme
+            qst.version = norme.version
+            qst.save()
 
+        if (len(columns1) == 6):
 
-    msg=0
-    return JsonResponse({"msg":msg})
+            id_chap = codif(norme.id, columns1[0])
+            if columns1[1] == "":
+                id_point = codif(id_chap, columns1[3])
+            else:
+                id_sc1 = codif(id_chap, columns1[1])
+                if columns1[2] == "":
+                    id_point = codif(id_sc1, columns1[3])
+                else:
+                    id_sc2 = codif(id_sc1, columns1[2])
+                    id_point = codif(id_sc2, columns1[3])
+
+            id_qst = codif(id_point, columns1[4])
+            qst = Question()
+            qst.id_qst = id_qst
+            qst.id_point = id_point
+            qst.question = columns1[4]
+            qst.id_norme = norme
+            qst.version = norme.version
+            qst.save()
+
+        if (len(columns1) == 7):
+
+            id_chap = codif(norme.id, columns1[0])
+            if columns1[1] == "":
+                id_point = codif(id_chap, columns1[4])
+            else:
+                id_sc1 = codif(id_chap, columns1[1])
+                if columns1[2] == "":
+                    id_point = codif(id_sc1, columns1[4])
+                else:
+                    id_sc2 = codif(id_sc1, columns1[2])
+                    if columns1[3] == "":
+                        id_point = codif(id_sc2, columns1[4])
+                    else:
+                        id_sc3 = codif(id_sc2, columns1[3])
+                        id_point = codif(id_sc3, columns1[4])
+
+            id_qst = codif(id_point, columns1[5])
+            qst = Question()
+            qst.id_qst = id_qst
+            qst.id_point = id_point
+            qst.question = columns1[4]
+            qst.id_norme = norme
+            qst.version = norme.version
+            qst.save()
+
+    msg = 0
+    return JsonResponse({"msg": msg})

@@ -56,21 +56,20 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item header__el"><a href="/home/" class="nav-link header__link">Acceuil</a></li>
         <li class="header__el"><a href="/resultat" class="nav-link header__link">Résultats</a></li>
+
+        <li class="header__el"><a href="#" class="nav-link header__link">Contactez-nous</a></li>
       </ul>
       <hr class="d-lg-none" />
       <ul class="navbar-nav align-items-center  ml-auto ml-md-0 ">
 
 
-        <li class="header__el"><a href="#" class="nav-link header__link">Contactez-nous</a></li>
         <li class="nav-item dropdown">
-          <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link pr-0 " href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div class="media align-items-center">
-              <span class="avatar avatar-sm rounded-circle">
-                <img alt="Image placeholder" src="/static/admin/assets/img/theme/team-4.jpg">
-              </span>
+
               <div class="media-body  ml-2  d-none d-lg-block">
                 <span class="mb-0 text-sm  font-weight-bold">
-                  {{ request.user.username }}
+                  {{ request.session.user }}
                 </span>
               </div>
             </div>
@@ -138,7 +137,7 @@
 
               <div class="circle-chart-wrap">
 
-  <div class="circle-chart theme05" data-percent="88">
+  <div class="circle-chart theme05" data-percent="20">
     <div class="chart-box">
       <div class="chart-circle-base"></div>
       <svg>
@@ -273,24 +272,13 @@ Chart.plugins.register({
 window.chart = new Chart(document.getElementById("canvas"), {
     type: "radar",
     data: {
-        labels: ["STA", "STR", "AGI", "VIT", "CHA", "INT"],
+        labels: {{ labels|safe }},
         datasets: [{
-            label: "Donté Panlin",
-            data: [25, 59, 90, 81, 60, 82],
+            label: "Chapitres",
+            data: {{ values|safe }},
             fill: true,
             backgroundColor: gradientRed,
             borderColor: 'transparent',
-            pointBackgroundColor: "transparent",
-            pointBorderColor: "transparent",
-            pointHoverBackgroundColor: "transparent",
-            pointHoverBorderColor: "transparent",
-            pointHitRadius: 50,
-        }, {
-            label: "Mireska Sunbreeze",
-            data: [40, 100, 40, 90, 40, 90],
-            fill: true,
-            backgroundColor: gradientBlue,
-            borderColor: "transparent",
             pointBackgroundColor: "transparent",
             pointBorderColor: "transparent",
             pointHoverBackgroundColor: "transparent",

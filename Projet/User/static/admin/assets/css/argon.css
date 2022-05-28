@@ -17853,3 +17853,11 @@ display:block;
 
 .circle-chart.theme05 .per-num{color:#3eaaf9;}
 .circle-chart.theme05 .chart-circle-progress{stroke:#3eaaf9;}
+
+ .error{
+            color: #D8000C;
+            margin-left: 40%;
+            font-size: 12px;
+            margin-top: -20px;
+         }
+

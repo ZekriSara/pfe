@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/unilogo.png' %}"/>
+  <meta name="theme-color" content="#1885ed">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
+
+
+
+    <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquert-3.4.1.js"></script>
+    <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+  <title>Acceuil</title>
+
+</head>
+<body>
+
+
+
+<header class="header">
+  <div class="container header__container">
+<div class="header__logo"><img class="header__img" src="{% static 'images/unilogo.png' %}"> <h1 class="header__title">UNID<span class="header__light">EES</span></h1></div>
+
+
+  <div class="header__menu">
+    <nav id="navbar" class="header__nav collapse">
+      <ul class="header__elenco">
+        <li class="header__el"><a href="#" class="header__link">Acceuil</a></li>
+        <li class="header__el"><a href="/historique" class="header__link">Historique</a></li>
+
+        <li class="header__el"><a href="#" class="header__link">Contactez-nous</a></li>
+        <li class="header__el header__el--blue"><a href="#" class="btn btn--white">{{ request.session.user }}</a></li>
+
+      </ul>
+    </nav>
+  </div>
+    </div>
+</header>
+
+<div class="sect sect--padding-top">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+    <div class="site">
+      <h1 class="site__title">Historique de vos tests !</h1>
+
+<div class="card-quizz">
+       <ul>
+{% for t in test %}
+         <li>
+                           <div class="inline-block">
+                             <div class="test"> {{ t.id_norme }}</div>
+
+                             <div class="data"> {{ t.date }} </div>
+
+                             {% if t.finished == False %}
+                             <div class="action">
+                                <a href="/quizz/{{t.id_norme.id}}/{{t.id_test}}"> Reprendre</a>
+                             </div>
+                             {% else %}
+
+                             <div class="action">
+                                <a href="/resultat/{{t.id_test}}">Voir résultats</a>
+                             </div>
+
+                             {%endif%}
+
+
+
+
+                           </div>
+         </li>
+
+
+        {% endfor %}
+
+
+          </ul>
+
+  </div>
+
+    </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script>
+
+document.getElementById("cl").addEventListener("click", function(){
+
+  var overlay = $('<div id="overlay">   </div>');
+  overlay.show();
+
+  overlay.appendTo(document.body);
+
+  document.querySelector("body").classList.toggle("active");
+  $('#popup1').show();
+
+ $('.close').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+$('.x').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+});
+
+$(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+</script>
+
+  <script>
+
+document.getElementById("rep").addEventListener("click", function(){
+
+  var overlay = $('<div id="overlay">   </div>');
+  overlay.show();
+
+  overlay.appendTo(document.body);
+
+  document.querySelector("body").classList.toggle("active");
+  $('#popup2').show();
+
+ $('.close').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+$('.x').click(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+});
+
+$(function(){
+$('.popup').hide();
+overlay.appendTo(document.body).remove();
+return false;
+});
+
+</script>
+
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>

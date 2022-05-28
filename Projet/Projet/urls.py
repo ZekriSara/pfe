@@ -25,3 +25,5 @@ urlpatterns = [
 ]
 
 urlpatterns += static(settings.MEDIA_URL, Document_root=settings.MEDIA_ROOT)
+
+handler404 = "Projet.views.page_not_found_view"

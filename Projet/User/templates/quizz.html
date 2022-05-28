@@ -42,18 +42,8 @@
            <ul>
                {% for c in chapitres %}
             <li class="sidebar-dropdown">
-              <a href="#" >{{ c.titre }} </a>
+              <a href="#" >{{forloop.counter}} . {{ c.titre }} </a>
 
-
-                <div class="sidebar-submenu">
-                  <ul>
-                      {% for p in points %}
-                      {% if p.id_chap_id == c.id_chap %}
-                       <li><a href="#" class=""><span class="item">{{ p.titre }}</span></a></li>
-                      {% endif %}
-                      {% endfor %}
-                  </ul>
-                </div>
 
             </li>
 
@@ -135,6 +125,8 @@
 
               </div>
                <div class="card-footer">
+
+                 <a href="#" id="previous" class="previous round"><i class="fa-solid fa-chevron-left"></i></a>
                  <a href="#" id="next" class="next round"><i class="fa-solid fa-chevron-right"></i></a>
                  <a href="/home" id="fin" class="next round disp"><i class="fa-solid fa-floppy-disk"></i></a>
 
@@ -278,6 +270,67 @@
                 else {alert(response.end);}
 
                 }
+
+
+                },
+
+                error:function(jqXHR, textStatus, errorThrown){
+
+                     var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        $('#post').html(msg);
+                  alert(msg);
+
+                }
+              });
+              return false;
+    })
+
+    </script>
+
+
+<script type="text/javascript">
+    var next = document.querySelector(".previous");
+    next.addEventListener("click", function(){
+
+        var point=document.getElementById("point").getAttribute('data-value');
+        var test=document.getElementById("test").getAttribute('data-value');
+
+
+
+              $.ajax({
+                type : 'GET',
+                url : "../../../prec/",
+                dataType:'json',
+                data : {
+                  'test':test,
+                  'point':point,
+                },
+                success:function(response){
+
+
+                document.getElementById("questions").innerHTML=response.quizz;
+                document.getElementById("point_titre").textContent=response.point;
+                document.getElementById("point_descri").textContent=response.point_descri;
+                document.getElementById("point").setAttribute('data-value',response.id);
+                document.getElementById("chap").textContent=response.chap;
+                document.getElementById("chap").setAttribute('title',response.chap_des);
+
+
 
 
                 },

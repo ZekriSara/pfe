@@ -1,13 +1,52 @@
 from tabnanny import verbose
 from tkinter import CASCADE
+
+from django.contrib.auth.models import User
 from django.db import models
 
 
 # Create your models here.
 
+class Client(models.Model):
+    id_client= models.AutoField(primary_key=True)
+    id_user= models.ForeignKey(User, verbose_name="users",on_delete=models.CASCADE)
+    raison=models.TextField()
+    num_fisc=models.TextField(default=None, null= True, blank=True)
+    is_valid=models.BooleanField(default=False)
+    date_fin=models.DateTimeField(default=None, null=True, blank=True)
+
+
+    class Meta:
+        verbose_name_plural = "Clients"
+
+    def __str__(self) -> str:
+        return self.raison
+
+class Admin(models.Model):
+    id_admin= models.AutoField(primary_key=True)
+    id_user= models.ForeignKey(User, verbose_name="users",on_delete=models.CASCADE)
+    is_super=models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = "Admins"
+
+    def __str__(self) -> str:
+        return self.id_admin
+
+class Loi(models.Model):
+    id = models.TextField(primary_key=True)
+    titre = models.TextField()
+    descriptif = models.TextField(default=None, blank=True, null=True)
+    file_name= models.TextField(default=None, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Lois"
+
+    def __str__(self) -> str:
+        return self.titre
 
 class Norme(models.Model):
-    id = models.TextField(primary_key=True, )
+    id = models.TextField(primary_key=True)
     titre = models.TextField()
     version = models.IntegerField(default=None, blank=True, null=True)
     descriptif = models.TextField(default=None, blank=True, null=True)
@@ -119,13 +158,16 @@ class Test(models.Model):
         return self.id_test
 
 
-class Question_Generale(models.Model):
+class Question(models.Model):
     id_qst = models.TextField(primary_key=True)
     id_norme = models.ForeignKey(Norme, verbose_name=("Normes"), on_delete=models.CASCADE)
+    id_point= models.ForeignKey(Point, verbose_name="Points", on_delete=models.CASCADE, default=None, blank=True, null=True)
     question = models.TextField()
+    version = models.IntegerField()
+
 
     class Meta:
-        verbose_name_plural = "Questions_Generales"
+        verbose_name_plural = "Questions"
 
     def __str__(self) -> str:
         return self.id_qst
@@ -134,7 +176,7 @@ class Question_Generale(models.Model):
 class Reponse(models.Model):
     id_reponse=models.TextField(primary_key=True)
     id_test=models.ForeignKey(Test,verbose_name="Tests",on_delete=models.CASCADE)
-    id_qst=models.ForeignKey(Question_Generale,verbose_name="Questions_Generales",on_delete=models.CASCADE)
+    id_qst=models.ForeignKey(Question,verbose_name="Questions",on_delete=models.SET_NULL,default=None, blank=True, null=True)
     version=models.IntegerField()
     id_norme = models.ForeignKey(Norme, verbose_name="Normes", on_delete=models.CASCADE)
     id_chap=models.ForeignKey(Chapitre,verbose_name="Chapitres",on_delete=models.CASCADE)
