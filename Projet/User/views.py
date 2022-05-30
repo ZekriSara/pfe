@@ -2,13 +2,15 @@ import json
 from datetime import datetime
 
 from django.conf.global_settings import LOGIN_REDIRECT_URL
-from django.contrib.auth import authenticate, login
+from django.conf.urls.static import static
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.urls import reverse
 
-from .models import Norme, Chapitre, Point, Question, SC_niv1, SC_niv2, SC_niv3, Reponse, Test, Client
+from .models import Norme, Chapitre, Point, Question, SC_niv1, SC_niv2, SC_niv3, Reponse, Test, Client, Loi
 
 import codecs
 from django.shortcuts import render, redirect
@@ -36,8 +38,12 @@ def register(request):
 
 def khra(request):
     normes = Norme.objects.all()
+    loi=Loi.objects.all()
+    for l in loi:
+        l.delete()
     for n in normes:
         n.delete()
+
 
     return render(request, "quizz.html")
 
@@ -98,7 +104,7 @@ def cnx(request):
 
     if User.objects.filter(email=email).exists():
         user = User.objects.get(email=email)
-        hash = make_password(mdp)
+       # hash = make_password(mdp)
         valid = user.check_password(mdp)
         if not valid:
             err = 1
@@ -106,54 +112,76 @@ def cnx(request):
             data = {
                 "err": err,
                 "erreur": erreur,
-
             }
             return JsonResponse(data)
 
         else:
+
             login(request, user)
-            assert user.is_authenticated
             request.session["user"] = user.username
-            request.user = user
+            ad=user.is_superuser
+
             data = {
-                "err": err
+                "err": err,
+                "ad":ad
 
             }
             return JsonResponse(data)
 
 
+def logo(request):
+
+    user=request.user
+    logout(request)
+    return redirect("/login/")
+
 # Client side views
 
 def index(request):
-    normes = Norme.objects.all()
-    tests = Test.objects.all()
-    us = User.objects.all()
-    # for u in us:
-    #    if u.username != "admin":
-    #        u.delete()
-    # for n in normes:
-    # n.delete()
 
-    context = {
-        'normes': normes,
-        'tests': tests,
-        'user': request.user
-    }
     if "user" not in request.session:
         return redirect('/login/')
 
     else:
+        normes = Norme.objects.all()
+        tests = Test.objects.filter(id_client=request.user.id).all()
+
+        context = {
+            'normes': normes,
+            'tests': tests,
+            'user': request.user
+        }
         return render(request, "index.html", context)
 
 
 def hist(request):
-    test = Test.objects.all()
+
 
     if "user" not in request.session:
         return redirect('/login/')
 
     else:
+        test = Test.objects.filter(id_client=request.user.id).all()
         return render(request, "history.html", context={'test': test})
+
+def normeuser(request):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        normes = Norme.objects.all()
+        return render(request, "normes.html", context={'normes': normes})
+
+def loiuser(request):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        lois = Loi.objects.all()
+        return render(request, "lois.html", context={'lois': lois})
+
+
+
 
 
 def quizz(request, id):
@@ -186,16 +214,17 @@ def quizz2(request, id, test):
 
     else:
         normes = Norme.objects.all()
-        points = Point.objects.all()
-        chapitres = Chapitre.objects.all()
-        questions = Question.objects.all()
+        points = Point.objects.filter(id_norme=id)
+        chapitres = Chapitre.objects.filter(id_norme=id)
+        questions = Question.objects.filter(id_norme=id)
         i = len(questions)
-        id = test
 
-        t = Test.objects.get(id_test=id)
+        test=int(test)
+
+        t = Test.objects.get(id_test=test)
 
         if t.last_point == None:
-            p = Point.objects.first()
+            p = Point.objects.filter(id_norme=id).first()
         else:
             p = Point.objects.get(id_point=t.last_point)
 
@@ -207,7 +236,7 @@ def quizz2(request, id, test):
             'questions': questions,
             'point': p,
             'i': i,
-            'id_test': id
+            'id_test': test
         }
 
         return render(request, "quizz.html", context)
@@ -325,8 +354,8 @@ def codeHtmlQuestion(point_actu):
     return quizz
 
 
-def dataReturnNextChap(point_actu, end):
-    quizz = codeHtmlQuestion(point_actu)
+def dataReturnNextChap(point_actu, end,test,chapprec):
+    quizz = codeHtmlQst(point_actu,test)
     id_chap = point_actu.id_chap.id_chap
     chap_actu = Chapitre.objects.get(id_chap=id_chap)
     if point_actu.id_Sc1 == None:
@@ -336,6 +365,8 @@ def dataReturnNextChap(point_actu, end):
                 'id': point_actu.id_point,
                 'chap': chap_actu.titre,
                 'chap_des': chap_actu.descriptif,
+                'chapid':chap_actu.id_chap,
+                'chapprec': chapprec.id_chap,
                 'end': end,
                 'cas': 4
                 }
@@ -497,47 +528,57 @@ def pointPrec(point_actu):
             point_prec=p
 
     return point_prec
-def qstPointPrec(point,test):
+def codeHtmlQst(point,test):
     i=1
     quizz=""
     questions = Question.objects.filter(id_norme=point.id_norme).all()
+    if  Reponse.objects.filter(id_point=point.id_point, id_test=test).all():
+        for q in questions:
 
-    for q in questions:
-        rep = Reponse.objects.filter(id_point=point.id_point, id_test=test.id_test,id_qst=q.id_qst).get()
+            if Reponse.objects.filter(id_point=point.id_point, id_test=test, id_qst=q.id_qst).exists():
+                rep = Reponse.objects.filter(id_point=point.id_point, id_test=test, id_qst=q.id_qst).get()
+                if rep.reponse == True:
+                    r = ('<li>' +
+                         '<div class="inline-block">' +
+                         '<div class="question">' + q.question + '</div>' +
+                         '<div class="check">' +
+                         '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
+                                i) + '" value="oui" checked> Oui </label> &nbsp;&nbsp;' +
+                         '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
+                                i) + '" value="non"> Non </label>' +
+                         '</div>' +
+                         '<div class="comment">' +
+                         '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(
+                                i) + '" >' +
+                         '</div>' +
+                         '</div>' +
+                         '</li>')
+                else:
+                    r = ('<li>' +
+                         '<div class="inline-block">' +
+                         '<div class="question">' + q.question + '</div>' +
+                         '<div class="check">' +
+                         '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
+                                i) + '" value="oui"> Oui </label> &nbsp;&nbsp;' +
+                         '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
+                                i) + '" value="non" checked> Non </label>' +
+                         '</div>' +
+                         '<div class="comment">' +
+                         '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(
+                                i) + '" >' +
+                         '</div>' +
+                         '</div>' +
+                         '</li>')
+                quizz = quizz + r
+                i = i + 1
 
-        if rep.reponse== True:
-            r = ('<li>' +
-                 '<div class="inline-block">' +
-                 '<div class="question">' + q.question + '</div>' +
-                 '<div class="check">' +
-                 '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
-                        i) + '" value="oui" checked> Oui </label> &nbsp;&nbsp;' +
-                 '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
-                        i) + '" value="non"> Non </label>' +
-                 '</div>' +
-                 '<div class="comment">' +
-                 '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
-                 '</div>' +
-                 '</div>' +
-                 '</li>')
-        else:
-            r = ('<li>' +
-                 '<div class="inline-block">' +
-                 '<div class="question">' + q.question + '</div>' +
-                 '<div class="check">' +
-                 '<label> <input type="radio" id="' + q.id_qst + '_oui" name="choice-radio' + str(
-                        i) + '" value="oui"> Oui </label> &nbsp;&nbsp;' +
-                 '<label> <input type="radio" id="' + q.id_qst + '_non" name="choice-radio' + str(
-                        i) + '" value="non" checked> Non </label>' +
-                 '</div>' +
-                 '<div class="comment">' +
-                 '<input class="custom-search-input"  id="com' + str(i) + '" placeholder="com' + str(i) + '" >' +
-                 '</div>' +
-                 '</div>' +
-                 '</li>')
-        quizz = quizz + r
-        i = i + 1
-    return quizz
+
+        return quizz
+
+    else:
+        quizz = codeHtmlQuestion(point)
+        return quizz
+
 
 def prec(request):
 
@@ -550,7 +591,7 @@ def prec(request):
     #return JsonResponse({"msg":point_prec.id_point})
     test=Test.objects.get(id_test=id_test)
 
-    quizz=qstPointPrec(point_prec,test)
+    quizz=codeHtmlQst(point_prec,test)
 
     data={
         'quizz': quizz,
@@ -559,16 +600,12 @@ def prec(request):
         'id': point_prec.id_point,
         'chap': point_prec.id_chap.titre,
         'chap_des': point_prec.id_chap.descriptif,
+        'chapprec':point_actu.id_chap.id_chap,
+         'chapid': point_prec.id_chap.id_chap
 
     }
 
     return JsonResponse(data)
-
-
-
-
-
-
 
 
 
@@ -589,7 +626,7 @@ def maj(request):
         r.id_test = Test.objects.get(id_test=test)
         id_qst= pre.id_norme.id + "_0" + incr
         r.id_qst = Question.objects.get(id_qst=id_qst)
-        r.id_reponse = pre.id_point +  "_0" + incr
+        r.id_reponse = pre.id_point + "_0" + incr
         r.id_point = pre
         r.id_chap = pre.id_chap
         r.id_Sc1 = pre.id_Sc1
@@ -619,7 +656,7 @@ def maj(request):
     # Next point exists
     if Point.objects.filter(id_point=id_point).exists():
         point_actu = Point.objects.get(id_point=id_point)
-        quizz = codeHtmlQuestion(point_actu)
+        quizz = codeHtmlQst(point_actu,test)
         data = {'quizz': quizz,
                 'point': point_actu.titre,
                 'point_descri': point_actu.point,
@@ -652,10 +689,13 @@ def maj(request):
                         id_chap = tailleMinus5(p)
                         if Chapitre.objects.filter(id_chap=id_chap).exists():
                             point_actu = Point.objects.filter(id_chap=id_chap).first()
-                            data = dataReturnNextChap(point_actu, end)
+                            data = dataReturnNextChap(point_actu, end,test, pre.id_chap)
                             return JsonResponse(data)
                         else:
                             end = 1
+                            t = Test.objects.get(id_test=test)
+                            t.finished = True
+                            t.save()
                             # fin
 
         if taille == 5:
@@ -675,10 +715,13 @@ def maj(request):
                     id_chap = tailleMinus4(p)
                     if Chapitre.objects.filter(id_chap=id_chap).exists():
                         point_actu = Point.objects.filter(id_chap=id_chap).first()
-                        data = dataReturnNextChap(point_actu, end)
+                        data = dataReturnNextChap(point_actu, end,test, pre.id_chap)
                         return JsonResponse(data)
                     else:
                         end = 1
+                        t = Test.objects.get(id_test=test)
+                        t.finished = True
+                        t.save()
                         # fin
 
         if taille == 4:
@@ -692,26 +735,35 @@ def maj(request):
                 id_chap = tailleMinus3(p)
                 if Chapitre.objects.filter(id_chap=id_chap).exists():
                     point_actu = Point.objects.filter(id_chap=id_chap).first()
-                    data = dataReturnNextChap(point_actu, end)
+                    data = dataReturnNextChap(point_actu, end,test, pre.id_chap)
                     return JsonResponse(data)
                 else:
                     # FIN
                     end = 1
+                    t = Test.objects.get(id_test=test)
+                    t.finished = True
+                    t.save()
 
         if taille == 3:
             id_chap = tailleMinus2(p)
             if Chapitre.objects.filter(id_chap=id_chap).exists():
                 point_actu = Point.objects.filter(id_chap=id_chap).first()
-                data = dataReturnNextChap(point_actu, end)
+                data = dataReturnNextChap(point_actu, end,test, pre.id_chap)
                 return JsonResponse(data)
 
             else:
+                t = Test.objects.get(id_test=test)
+                t.finished= True
+                t.save()
                 return JsonResponse({'end': 1})
+
+
+
 
     return JsonResponse(data)
 
 
-def resultat(request):
+def resultat(request,id):
     if "user" not in request.session:
         return redirect('/login/')
 
@@ -720,7 +772,7 @@ def resultat(request):
         test = Test.objects.get(id_test=id)
 
         if test.finished == True:
-            reponses = Reponse.objects.get(id_test=test.id_test)
+            reponses = Reponse.objects.filter(id_test=test.id_test).all()
             comp = 0
 
             for r in reponses:
@@ -733,14 +785,14 @@ def resultat(request):
             values = []
             i = 1
 
-            chapitres = Chapitre.objects.get(id_norme=test.id_norme.id)
+            chapitres = Chapitre.objects.filter(id_norme=test.id_norme.id).all()
 
             for c in chapitres:
-                str = str(i)
-                lab = "Chap" + i
+                smth = str(i)
+                lab = "Chap" + smth
                 labels.append(lab)
                 comp = 0
-                reponses = Reponse.objects.get(id_chap=c.id_chap)
+                reponses = Reponse.objects.filter(id_chap=c.id_chap,id_test=id).all()
                 for r in reponses:
                     if r.reponse == True:
                         comp = comp + 1
@@ -749,8 +801,18 @@ def resultat(request):
                 values.append(val)
 
                 i = i + 1
+
+            labels.append("ok")
+            val=90
+            values.append(val)
             return render(request, "resultat.html",
-                          context={"labels": json.dumps(labels), "values": json.dumps(values)})
+                          context={"labels": json.dumps(labels),
+                                   "values": json.dumps(values),
+                                   "pourcent": pourcentage,
+                                   "test":id,
+                                   "norme": test.id_norme
+
+                                   })
 
 
 # Admin side views
@@ -762,8 +824,20 @@ def adminIndex(request):
 
     else:
         user = User.objects.get(username=request.session["user"])
-        if user.is_superuser is True:
-            return render(request, 'Admin/home/index.html')
+        if user.is_superuser:
+            client=Client.objects.all()
+            test=Test.objects.all()
+            norme=Test.objects.all()
+            nbc=len(client)
+            nbt=len(test)
+            nbn=len(norme)
+
+            context={
+                "nbc": nbc,
+                "nbt": nbt,
+                "nbn":nbn
+            }
+            return render(request, 'Admin/home/index.html',context)
         else:
             return redirect("/home/")
 
@@ -775,7 +849,8 @@ def userindex(request):
     else:
         user = User.objects.get(username=request.session["user"])
         if user.is_superuser is True:
-            return render(request, "Admin/home/tables.html")
+            users=Client.objects.all()
+            return render(request, "Admin/home/tables.html", context={"users":users})
         else:
             return redirect("/home/")
 
@@ -786,10 +861,12 @@ def ajouternorme(request):
 
     else:
         user= User.objects.get(username=request.session["user"])
-        if user.is_superuser is True:
+
+        if user.is_superuser:
             return render(request, "Admin/home/ajouternorme.html")
-        else:
+        else :
             return redirect("/home/")
+
 
 
 def remplacer(file):
@@ -856,6 +933,8 @@ def upload(request):
     url = fss.url(filename)
 
     FileModel.objects.create(doc=url)
+
+    path=settings.MEDIA_ROOT+"/csv"+"/"+filename
 
     file = open(os.path.join(settings.MEDIA_ROOT, filename), 'r', encoding='utf-8', errors='replace').read()
     file = remplacer(file)
@@ -1216,3 +1295,72 @@ def upload3(request):
 
     msg = 0
     return JsonResponse({"msg": msg})
+
+def indexloi(request):
+
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser:
+            return render(request, "Admin/home/ajouterloi.html")
+        else:
+            return redirect("/home/")
+
+
+
+def ajouterloi(request):
+    id=request.POST.get("id")
+    titre=request.POST.get("titre")
+    desc=request.POST.get("desc")
+    file = request.FILES.get("file")
+
+
+
+
+    if Loi.objects.filter(id=id).exists():
+        msg="Cet identifiant de loi existe déjà"
+        return JsonResponse({
+            'error':msg,
+            'msg':1
+
+        })
+    loi= Loi()
+    loi.id=id
+    loi.titre=titre
+    loi.descriptif=desc
+    loi.file_name=File(file, file.name)
+    loi.save()
+
+
+    data={
+        "msg": 0
+
+    }
+    return JsonResponse(data)
+
+def normes(request):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser:
+            normes=Norme.objects.all()
+            return render(request,"Admin/home/normes.html", context={"normes":normes})
+        else:
+            return redirect('/home/')
+
+def lois(request):
+
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser:
+            lois=Loi.objects.all()
+            return render(request,"Admin/home/lois.html", context={"lois":lois})
+        else:
+            return redirect('/home/')

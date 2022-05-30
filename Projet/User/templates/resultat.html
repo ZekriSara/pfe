@@ -55,9 +55,11 @@
       </div>
       <ul class="navbar-nav mr-auto">
         <li class="nav-item header__el"><a href="/home/" class="nav-link header__link">Acceuil</a></li>
-        <li class="header__el"><a href="/resultat" class="nav-link header__link">Résultats</a></li>
+        <li class="header__el"><a href="/norme/" class="nav-link header__link">Normes</a></li>
+        <li class="header__el"><a href="/loi/" class="nav-link header__link">Lois</a></li>
+        <li class="header__el"><a href="/historique/" class="nav-link header__link">Historique</a></li>
 
-        <li class="header__el"><a href="#" class="nav-link header__link">Contactez-nous</a></li>
+
       </ul>
       <hr class="d-lg-none" />
       <ul class="navbar-nav align-items-center  ml-auto ml-md-0 ">
@@ -76,12 +78,7 @@
           </a>
           <div class="dropdown-menu  dropdown-menu-right ">
 
-            <a href="/profile.html" class="dropdown-item">
-              <i class="ni ni-single-02"></i>
-              <span>Mon profile</span>
-            </a>
 
-            <div class="dropdown-divider"></div>
             <a href="{% url 'logout' %}" class="dropdown-item">
               <i class="ni ni-user-run text-red"></i>
               <span>Se déconnecter</span>
@@ -100,7 +97,7 @@
           <div class="row  py-5" style="text-align:center;">
             <div class="col-lg-12 col-7">
               <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h1 style="color:white;"> Vos résultats pour le test X</h1>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h1 style="color:white;"> Vos résultats pour le test {{ test}}</h1>
               </nav>
             </div>
 
@@ -137,7 +134,7 @@
 
               <div class="circle-chart-wrap">
 
-  <div class="circle-chart theme05" data-percent="20">
+  <div class="circle-chart theme05" data-percent="{{pourcent}}">
     <div class="chart-box">
       <div class="chart-circle-base"></div>
       <svg>

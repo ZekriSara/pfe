@@ -1,6 +1,7 @@
 from tabnanny import verbose
 from tkinter import CASCADE
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -37,7 +38,7 @@ class Loi(models.Model):
     id = models.TextField(primary_key=True)
     titre = models.TextField()
     descriptif = models.TextField(default=None, blank=True, null=True)
-    file_name= models.TextField(default=None, blank=True, null=True)
+    file_name= models.FileField(upload_to=settings.MEDIA_ROOT+"/pdf",default=None, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Lois"
@@ -90,7 +91,7 @@ class SC_niv1(models.Model):
 class SC_niv2(models.Model):
     id_norme = models.ForeignKey(Norme, verbose_name=("Normes"), on_delete=models.CASCADE)
     version = models.IntegerField()
-    id_chap = models.ForeignKey(Chapitre, verbose_name="Chapitres", on_delete=models.CASCADE)
+    id_chap = models.ForeignKey(Chapitre, verbose_name=("Chapitres"), on_delete=models.CASCADE)
     id_Sc1 = models.ForeignKey(SC_niv1, verbose_name=("Sc_niv1"), on_delete=models.CASCADE)
     id_Sc2 = models.TextField(primary_key=True)
     titre = models.TextField()
@@ -145,7 +146,7 @@ class Point(models.Model):
 
 class Test(models.Model):
     id_test = models.AutoField(primary_key=True)
-    id_client = models.IntegerField(default=None, blank=True, null=True)
+    id_client = models.ForeignKey(User,verbose_name=("Users"),on_delete=models.CASCADE,default=None,blank=True, null=True)
     id_norme = models.ForeignKey(Norme, verbose_name=("Normes"), on_delete=models.CASCADE)
     finished = models.BooleanField()
     date = models.DateField(default=None, blank=True, null=True)
@@ -190,7 +191,7 @@ class Reponse(models.Model):
     
 class FileModel(models.Model):
 
-    doc=models.FileField(upload_to='CSVs')
+    doc=models.FileField(upload_to=settings.MEDIA_ROOT)
     #uploaded= models.DateTimeField(auto_now_add=True)
     
 

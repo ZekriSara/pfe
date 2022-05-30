@@ -14,7 +14,7 @@
               <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                 <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
                 <li class="breadcrumb-item"><a href="#">Tables</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Utilisateurs</li>
+                <li class="breadcrumb-item active" aria-current="page">Normes</li>
               </ol>
             </nav>
           </div>
@@ -31,48 +31,43 @@
         <div class="card">
           <!-- Card header -->
           <div class="card-header border-0">
-            <h3 class="mb-0">Utilisateurs</h3>
+            <h3 class="mb-0">Normes</h3>
           </div>
           <!-- Light table -->
           <div class="table-responsive">
             <table class="table align-items-center table-flush">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col" class="sort" data-sort="name">Nom</th>
-                  <th scope="col" class="sort" data-sort="email">E-Mail</th>
-                  <th scope="col" class="sort" data-sort="secteur">Entreprise</th>
-                  <th scope="col" class="sort" data-sort="test">Numéro fiscale</th>
-                  <th scope="col">Payement</th>
+                  <th scope="col" class="sort" >Norme</th>
+                  <th scope="col" class="sort" >Version</th>
+
+                  <th scope="col" class="sort" >Titre</th>
+                  <th scope="col" class="sort" >Descriptif</th>
+                  <th scope="col" class="sort" >Actions</th>
+
 
                 </tr>
               </thead>
               <tbody class="list">
-            {% for u in users %}
+           {% for n in normes %}
                <tr>
                     <th scope="row">
-                      {{ u.id_user.username }}
+                      {{ n.id }}
                     </th>
                     <td>
-                      {{ u.id_user.email }}
+                      {{ n.version }}
                     </td>
                     <td>
-                      {{ u.raison}}
+                      {{ n.titre }}
                     </td>
                     <td>
-                      {{ u.num_fisc }}
+                      {{ n.descriptif }}
                     </td>
                     <td>
 
-                      {% if u.is_valid == true %}
-                      <i class="ni ni-check-bold text-success mr-3"></i> Validé
-
-                      {% else %}
-
-
-                      {% endif %}
                     </td>
                   </tr>
-{% endfor %}
+          {% endfor %}
               </tbody>
             </table>
           </div>

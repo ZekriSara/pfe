@@ -1,9 +1,7 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from .views import index, quizz, upload, upload2, maj, resultat, adminIndex, log, register, \
-    userindex, \
-    ajouternorme, upload3, quizz2, reg, cnx, hist, khra, prec
+from .views import *
 
 urlpatterns = [
     path('home/', index),
@@ -15,18 +13,24 @@ urlpatterns = [
     path('quizz/<id>/', quizz),
     path('ajax/', maj),
     path('prec/', prec),
-    path('resultat/',resultat),
+    path('resultat/<id>',resultat),
     path('upload/', upload),
     path('upload2/',upload2),
     path('upload3/',upload3),
     path('admin/',adminIndex),
     path('users/',userindex),
+    path('normes/',normes),
+    path('lois/', lois),
     path('ajout/norme/',ajouternorme),
+    path('ajout/loi/',indexloi),
     path('historique/',hist),
+    path('uploadloi/',ajouterloi),
+    path('norme/',normeuser),
+    path('loi/',loiuser),
 
-    path('khra',khra),
+    path('khra/',khra),
 
-    path("logout/", LogoutView.as_view(), name="logout")
+    path("logout/", logo, name="logout")
 
 ]
 

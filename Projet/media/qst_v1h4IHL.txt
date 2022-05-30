@@ -1,4 +1,0 @@
-1;CIS;Politique définie
-2;CIS;Contrôle implémenté
-3;CIS;Contrôle automatisé
-4;CIS;Contrôle remonté

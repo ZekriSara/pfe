@@ -27,7 +27,24 @@
                 <a href="#">
                         <i class="fas fa-bars"></i>
                     </a>
+
+
             </div>
+
+    <div class="header__menu">
+    <nav id="navbar" class="header__nav collapse">
+      <ul class="header__elenco">
+        <li class="header__el"><a href="/home/" class="header__link">Acceuil</a></li>
+         <li class="header__el"><a href="/norme/" class="header__link">Normes</a></li>
+        <li class="header__el"><a href="/loi/" class="header__link">Lois</a></li>
+        <li class="header__el"><a href="/historique" class="header__link">Historique</a></li>
+
+        <li class="header__el"><a href="/logout/" class="header__link">Se déconnecter</a></li>
+        <li class="header__el header__el--blue"><a href="#" class="btn btn--white">{{ request.user.username }}</a></li>
+
+      </ul>
+    </nav>
+  </div>
 
 
 
@@ -41,9 +58,12 @@
          <div class="sidebar-menu">
            <ul>
                {% for c in chapitres %}
-            <li class="sidebar-dropdown">
-              <a href="#" >{{forloop.counter}} . {{ c.titre }} </a>
-
+            <li class="sidebar-dropdown" id="lichap">
+                {% if c == point.id_chap %}
+              <a href="#" class=" active"  name="sidebarchap" id="{{c.id_chap}}">{{forloop.counter}} . {{ c.titre }} </a>
+                 {% else %}
+                 <a href="#"  name="sidebarchap"  id="{{c.id_chap}}" >{{forloop.counter}} . {{ c.titre }} </a>
+               {%endif%}
 
             </li>
 
@@ -251,6 +271,10 @@
                 document.getElementById("point").setAttribute('data-value',response.id);
                 document.getElementById("chap").textContent=response.chap;
                 document.getElementById("chap").setAttribute('title',response.chap_des);
+
+                document.getElementById(response.chapid).classList.add("active");
+
+                document.getElementById(response.chapprec).classList.remove("active");
                 document.getElementById("sc1").textContent=response.sc1;
                 document.getElementById("sc1").setAttribute('title',response.sc1_des);
                 document.getElementById("sc2").textContent=response.sc2;
@@ -329,8 +353,12 @@
                 document.getElementById("point").setAttribute('data-value',response.id);
                 document.getElementById("chap").textContent=response.chap;
                 document.getElementById("chap").setAttribute('title',response.chap_des);
+              if ( response.chapid != response.chapprec ) {
+                document.getElementById(response.chapid).classList.add("active");
 
+                document.getElementById(response.chapprec).classList.remove("active");
 
+               }
 
 
                 },

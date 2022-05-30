@@ -1,0 +1,208 @@
+{% extends 'Admin/layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block content %}
+
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fa fa-plus"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Ajout d'une loi</li>
+              </ol>
+            </nav>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+      <div class="row">
+        <div class="col-xl-2"></div>
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              <div class="modal-header"><span id="span1" class="is-active"></span></div>
+            </div>
+            <div class="card-body">
+              <div class="step  is_showing"  id="step1">
+                <label class="justatitle"><h3>Veuillez saisir le titre et le déscriptif de la loi</h3></label>
+                <div class="norme">
+                  <div class="inline-block">
+                    <label for="id" id="id-label">Identifiant de la loi</label>
+                    <input class="input " type="text" id="id" onkeyup="this.value=this.value.toUpperCase()" >
+                  </div>
+
+                  <div class="inline-block">
+                    <label for="titre" id="titre-label">Titre de la loi</label>
+                    <input class="input"  type="text" id="titre" >
+                  </div>
+                  <div class="inline-block">
+                    <label for="descriptif" id="descriptif-label">Déscriptif de la loi</label>
+                    <input class="input"  type="text" id="descriptif" >
+                  </div>
+                </div>
+                 <label class="justatitle"><h3>Seléctionnez le fichier contenant l'article de la loi</h3></label>
+                <div class="file-upload" id="file-upload">
+                     <div class="file-select" id="file">
+                         <div class="file-select-button" id="fileName">Parcourir</div>
+                         <div class="file-select-name" id="noFile">Aucun fichier choisi...</div>
+                         {% csrf_token %}
+                         <input class="input" type="file" name="files" id="chooseFile">
+				         <div id="msg"></div>
+                     </div>
+                </div>
+              </div>
+
+                <div class="card-footer">
+             <a class="btn-upload  is_showing " id="upload" type="submit" href="#">Suivant</a>
+
+           </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2"></div>
+      </div>
+
+
+    {% include "Admin/includes/footer.html" %}
+
+  </div>
+
+ <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+$('#chooseFile').bind('change', function () {
+  var filename = $("#chooseFile").val();
+  if (/^\s*$/.test(filename)) {
+    $("#file-upload").removeClass('active');
+    $("#noFile").text("No file chosen...");
+  }
+  else {
+    $("#file-upload").addClass('active');
+    $("#noFile").text(filename.replace("C:\\fakepath\\", ""));
+    document.getElementById("file").classList.remove('false');
+  }
+});
+
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+				$('#upload').on('click', function () {
+					var data = new FormData();
+					var ins = document.getElementById('chooseFile').value;
+					var id= document.getElementById('id').value;
+					var titre= document.getElementById('titre').value;
+					var desc= document.getElementById('descriptif').value;
+
+					var file= document.getElementById('chooseFile').files[0];
+
+
+                    var remp= 1;
+
+
+					if(ins == "") {
+						$('#noFile').text("Veuillez séléctionner un fichier");
+						document.getElementById("file").classList.add('false');
+						remp=0;
+					} else{document.getElementById("file").classList.remove('false');
+					type = file.type;
+
+					if (!( type == "application/pdf")){
+                     alert("Veuillez séléctionner un fichier de type PDF");
+                     remp=0;
+                    }
+
+					}
+
+					  if(id== ""){
+                        document.getElementById("id").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("id").classList.remove('false');}
+					  if(titre== ""){
+                        document.getElementById("titre").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("titre").classList.remove('false');}
+					  if(desc== ""){
+                        document.getElementById("descriptif").classList.add('false');
+                        remp=0;
+					   }
+					   else{document.getElementById("descriptif").classList.remove('false');}
+					  if(remp ==0){
+                    return;
+                    }
+                    data.append('file',file);
+                    data.append('id',id);
+                    data.append('titre',titre);
+                    data.append('desc',desc);
+					csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+					data.append("csrfmiddlewaretoken", csrf_token);
+
+					$.ajax({
+					    type: 'post',
+						url: '/uploadloi/', // point to server-side URL
+						dataType: 'json', // what to expect back from server
+						data: data,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (response) { // display success response
+
+							if(response.msg==0){
+
+                               alert ( "loi ajoutée avec succés");
+
+							}
+							else{
+							alert(response.error);
+							}
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							                  var msg = '';
+
+                                  if (jqXHR.status === 0) {
+                                       msg = 'Not connect.\n Verify Network.';
+                                  } else if (jqXHR.status == 404) {
+                                       msg = 'Requested page not found. [404]';
+                                  } else if (jqXHR.status == 500) {
+                                       msg = 'Internal Server Error [500].';
+                                  } else if (exception === 'parsererror') {
+                                       msg = 'Requested JSON parse failed.';
+                                  } else if (exception === 'timeout') {
+                                       msg = 'Time out error.';
+                                  } else if (exception === 'abort') {
+                                       msg = 'Ajax request aborted.';
+                                  } else {
+                                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                  }
+					                   alert(msg);
+					    }
+					});
+				});
+			});
+
+
+
+</script>
+
+
+
+{% endblock content %}
+
+
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}
+

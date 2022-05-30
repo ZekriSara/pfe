@@ -11,7 +11,9 @@
 
     <script src="https://kit.fontawesome.com/50394fcad9.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquert-3.4.1.js"></script>
+    <script src="/static/js/popper.min.js"></script>
     <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+
   <title>Acceuil</title>
 
 </head>
@@ -61,11 +63,25 @@
   <div class="header__menu">
     <nav id="navbar" class="header__nav collapse">
       <ul class="header__elenco">
-        <li class="header__el"><a href="#" class="header__link">Acceuil</a></li>
+        <li class="header__el"><a href="/home/" class="header__link">Acceuil</a></li>
+        <li class="header__el"><a href="/norme/" class="header__link">Normes</a></li>
+        <li class="header__el"><a href="/loi/" class="header__link">Lois</a></li>
+
         <li class="header__el"><a href="/historique" class="header__link">Historique</a></li>
 
-        <li class="header__el"><a href="#" class="header__link">Contactez-nous</a></li>
-        <li class="header__el header__el--blue"><a href="#" class="btn btn--white">{{ request.session.user }}</a></li>
+
+        <li class="header__el"><a href="/logout/" class="header__link">Se déconnecter</a></li>
+
+
+
+        <li class="header__el header__el--blue">
+
+          <a href="#" class="btn btn--white">{{ request.user.username }}</a>
+
+
+
+
+        </li>
 
       </ul>
     </nav>

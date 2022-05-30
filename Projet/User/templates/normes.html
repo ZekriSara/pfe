@@ -47,30 +47,21 @@
     <div class="row">
       <div class="col-md-12">
     <div class="site">
-      <h1 class="site__title">Historique de vos tests !</h1>
+      <h1 class="site__title">Liste des normes!</h1>
 
 <div class="card-quizz">
        <ul>
-{% for t in test %}
+{% for n in normes %}
          <li>
-                           <div class="inline-block">
-                             <div class="test"> {{ t.id_norme }}</div>
+                           <div class="inline-block2">
+                             <div class="id"> {{ n.id }}</div>
 
-                             <div class="data"> {{ t.date }} </div>
+                             <div class="titre"> {{ n.titre }} </div>
 
-                             {% if t.finished == False %}
-                             <div class="action">
-                                <a href="/quizz/{{t.id_norme.id}}/{{t.id_test}}"> Reprendre</a>
+
+                             <div class="descri">
+                                {{ n.descriptif }}
                              </div>
-                             {% else %}
-
-                             <div class="action">
-                                <a href="/resultat/{{t.id_test}}">Voir résultats</a>
-                             </div>
-
-                             {%endif%}
-
-
 
 
                            </div>
@@ -78,6 +69,7 @@
 
 
         {% endfor %}
+
 
 
           </ul>
