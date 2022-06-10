@@ -27,6 +27,17 @@ urlpatterns = [
     path('uploadloi/',ajouterloi),
     path('norme/',normeuser),
     path('loi/',loiuser),
+    path('ajout/admin/',ajouteradmin),
+    path("ajoutad/",ajoutad),
+    path("admins/",listeadmins),
+    path("delete/<id>/",deleteuser),
+    path("valider/<id>",valideruser),
+    path("supp/<id>/",deleteloi),
+    path("sup/<id>/",deletenorme),
+    path("voir/<id>/",voir),
+    path("norme/<id>/",voirnorme),
+    path("loi/<id>/",voirloi),
+
 
     path('khra/',khra),
 

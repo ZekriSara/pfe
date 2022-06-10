@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.urls import reverse
 
-from .models import Norme, Chapitre, Point, Question, SC_niv1, SC_niv2, SC_niv3, Reponse, Test, Client, Loi
+from .models import Norme, Chapitre, Point, Question, SC_niv1, SC_niv2, SC_niv3, Reponse, Test, Client, Loi, \
+    Notification
 
 import codecs
 from django.shortcuts import render, redirect
@@ -79,7 +80,6 @@ def reg(request):
     u.username = username
     u.email = email
     u.set_password(mdp)
-    u.is_active = True
     u.save()
 
     c = Client()
@@ -87,6 +87,12 @@ def reg(request):
     c.raison = entreprise
     c.num_fisc = id_fisc
     c.save()
+
+    n=Notification()
+    n.type=1
+    n.user=u
+    n.save()
+
 
     data = {
         'err': err,
@@ -116,17 +122,181 @@ def cnx(request):
             return JsonResponse(data)
 
         else:
+            if user.is_active:
+                login(request, user)
+                request.session["user"] = user.username
+                ad = user.is_superuser
 
-            login(request, user)
-            request.session["user"] = user.username
-            ad=user.is_superuser
+                data = {
+                    "err": err,
+                    "ad": ad
 
-            data = {
-                "err": err,
-                "ad":ad
+                }
+                return JsonResponse(data)
+            else:
+                err=1
+                erreur= "Votre compte n'a pas encore été validé."
+                data = {
+                    "err": err,
+                    "erreur": erreur,
+                }
+                return JsonResponse(data)
 
+
+def ajouteradmin(request):
+    notif = Notification.objects.filter(type=1).all()
+
+    notif2 = Notification.objects.filter(type=1, vu=False).all()
+    nb = len(notif2)
+
+    context = {
+
+        "notif": notif,
+        "nb": nb
+    }
+
+    return render(request,"Admin/home/ajouteradmin.html",context)
+
+def ajoutad(request):
+    username = request.POST.get('username')
+    email = request.POST.get('email')
+    mdp = request.POST.get('mdp')
+    err = 0
+
+    if User.objects.filter(username=username).exists():
+        err = 1
+        erreur = "Ce Username est déjà utilisé."
+        data = {
+            'err': err,
+            'erreur': erreur
+        }
+        return JsonResponse(data)
+
+    if User.objects.filter(email=email).exists():
+        err = 1
+        erreur = "Cet email est déjà utilisé."
+        data = {
+            'err': err,
+            'erreur': erreur
+        }
+        return JsonResponse(data)
+
+    u = User()
+    u.username = username
+    u.email = email
+    u.set_password(mdp)
+    u.is_active = True
+    u.is_superuser= True
+    u.save()
+
+    data = {
+        'err': err,
+
+    }
+
+    return JsonResponse(data)
+
+def listeadmins(request):
+
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            users=User.objects.filter(is_superuser=True).all()
+            notif = Notification.objects.filter(type=1).all()
+
+            notif2= Notification.objects.filter(type=1,vu=False).all()
+            nb = len(notif2)
+
+            context = {
+                "users": users,
+                "notif": notif,
+                "nb": nb
             }
-            return JsonResponse(data)
+            return render(request, "Admin/home/admins.html", context)
+        else:
+            return redirect("/home/")
+
+def deleteuser(request,id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            user = User.objects.filter(username=id).get()
+            client = Client.objects.filter(id_user=user.id).get()
+            client.is_valid = False
+            client.save()
+            return redirect("/users/")
+        else:
+            return redirect("/home/")
+
+
+
+def deleteloi(request,id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            loi = Loi.objects.filter(id=id).get()
+            loi.delete()
+            return redirect("/lois/")
+        else:
+            return redirect("/home/")
+def deletenorme(request,id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            loi = Norme.objects.filter(id=id).get()
+            loi.delete()
+            return redirect("/normes/")
+        else:
+            return redirect("/home/")
+
+def voir(request,id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+
+            notif = Notification.objects.get(id=id)
+            notif.vu= True
+            notif.save()
+
+            return redirect("/users/")
+
+        else:
+
+            return redirect("/home/")
+
+
+
+def valideruser(request, id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        user = User.objects.get(username=request.session["user"])
+        if user.is_superuser is True:
+            user = User.objects.filter(username=id).get()
+            user.is_active=True
+            user.save()
+            client= Client.objects.filter(id_user=user.id).get()
+            client.is_valid= True
+            client.save()
+            return redirect("/users/")
+        else:
+            return redirect("/home/")
 
 
 def logo(request):
@@ -146,10 +316,16 @@ def index(request):
         normes = Norme.objects.all()
         tests = Test.objects.filter(id_client=request.user.id).all()
 
+        notif = Notification.objects.filter(type__in= (2,3)).all()
+        notif2 = Notification.objects.filter(type__in=(2, 3),vu=False).all()
+        nb = len(notif2)
+
         context = {
             'normes': normes,
             'tests': tests,
-            'user': request.user
+            'user': request.user,
+            "notif": notif,
+            "nb": nb
         }
         return render(request, "index.html", context)
 
@@ -158,11 +334,20 @@ def hist(request):
 
 
     if "user" not in request.session:
+
         return redirect('/login/')
 
     else:
         test = Test.objects.filter(id_client=request.user.id).all()
-        return render(request, "history.html", context={'test': test})
+        notif = Notification.objects.filter(type__in= (2,3)).all()
+        notif2 = Notification.objects.filter(type__in=(2, 3), vu=False).all()
+        nb = len(notif2)
+        context = {
+            "test":test,
+            "notif": notif,
+            "nb": nb
+        }
+        return render(request, "history.html", context)
 
 def normeuser(request):
     if "user" not in request.session:
@@ -170,7 +355,39 @@ def normeuser(request):
 
     else:
         normes = Norme.objects.all()
-        return render(request, "normes.html", context={'normes': normes})
+        notif = Notification.objects.filter(type__in= (2,3)).all()
+        notif2 = Notification.objects.filter(type__in=(2, 3), vu=False).all()
+        nb = len(notif2)
+
+        context = {
+            "normes":normes,
+            "notif": notif,
+            "nb": nb
+        }
+        return render(request, "normes.html", context)
+
+
+def voirnorme(request,id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        notif= Notification.objects.get(id=id)
+        notif.vu= True
+        notif.save()
+        return redirect('/norme/')
+
+def voirloi(request,id):
+    if "user" not in request.session:
+        return redirect('/login/')
+
+    else:
+        notif= Notification.objects.get(id=id)
+        notif.vu= True
+        notif.save()
+        return redirect('/loi/')
+
+
 
 def loiuser(request):
     if "user" not in request.session:
@@ -178,7 +395,16 @@ def loiuser(request):
 
     else:
         lois = Loi.objects.all()
-        return render(request, "lois.html", context={'lois': lois})
+        notif = Notification.objects.filter(type__in= (2,3)).all()
+        notif2 = Notification.objects.filter(type__in=(2, 3), vu=False).all()
+        nb = len(notif2)
+
+        context = {
+            "lois": lois,
+            "notif": notif,
+            "nb": nb
+        }
+        return render(request, "lois.html", context)
 
 
 
@@ -228,6 +454,12 @@ def quizz2(request, id, test):
         else:
             p = Point.objects.get(id_point=t.last_point)
 
+        notif = Notification.objects.filter(type__in= (2,3)).all()
+        notif2 = Notification.objects.filter(type__in=(2, 3), vu=False).all()
+        nb = len(notif2)
+
+
+
 
         context = {
             'normes': normes,
@@ -236,7 +468,9 @@ def quizz2(request, id, test):
             'questions': questions,
             'point': p,
             'i': i,
-            'id_test': test
+            'id_test': test,
+            "notif": notif,
+            "nb": nb
         }
 
         return render(request, "quizz.html", context)
@@ -832,10 +1066,15 @@ def adminIndex(request):
             nbt=len(test)
             nbn=len(norme)
 
+            notif=Notification.objects.filter(type=1).all()
+            nb=len(notif)
+
             context={
                 "nbc": nbc,
                 "nbt": nbt,
-                "nbn":nbn
+                "nbn":nbn,
+                "notif": notif,
+                "nb": nb
             }
             return render(request, 'Admin/home/index.html',context)
         else:
@@ -850,7 +1089,16 @@ def userindex(request):
         user = User.objects.get(username=request.session["user"])
         if user.is_superuser is True:
             users=Client.objects.all()
-            return render(request, "Admin/home/tables.html", context={"users":users})
+            notif = Notification.objects.filter(type=1).all()
+            notif2= Notification.objects.filter(type=1,vu=False).all()
+            nb = len(notif2)
+
+            context = {
+                "users": users,
+                "notif": notif,
+                "nb": nb
+            }
+            return render(request, "Admin/home/tables.html", context)
         else:
             return redirect("/home/")
 
@@ -863,7 +1111,16 @@ def ajouternorme(request):
         user= User.objects.get(username=request.session["user"])
 
         if user.is_superuser:
-            return render(request, "Admin/home/ajouternorme.html")
+            notif = Notification.objects.filter(type=1).all()
+
+            notif2= Notification.objects.filter(type=1,vu=False).all()
+            nb = len(notif2)
+
+            context = {
+                "notif": notif,
+                "nb": nb
+            }
+            return render(request, "Admin/home/ajouternorme.html",context)
         else :
             return redirect("/home/")
 
@@ -1293,6 +1550,11 @@ def upload3(request):
             qst.version = norme.version
             qst.save()
 
+            n= Notification()
+            n.type=2
+            n.norme=norme
+            n.save()
+
     msg = 0
     return JsonResponse({"msg": msg})
 
@@ -1304,7 +1566,16 @@ def indexloi(request):
     else:
         user = User.objects.get(username=request.session["user"])
         if user.is_superuser:
-            return render(request, "Admin/home/ajouterloi.html")
+            notif = Notification.objects.filter(type=1).all()
+
+            notif2= Notification.objects.filter(type=1,vu=False).all()
+            nb = len(notif2)
+
+            context = {
+                "notif": notif,
+                "nb": nb
+            }
+            return render(request, "Admin/home/ajouterloi.html",context)
         else:
             return redirect("/home/")
 
@@ -1333,6 +1604,10 @@ def ajouterloi(request):
     loi.file_name=File(file, file.name)
     loi.save()
 
+    n= Notification()
+    n.type=3
+    n.loi=loi
+    n.save()
 
     data={
         "msg": 0
@@ -1348,7 +1623,17 @@ def normes(request):
         user = User.objects.get(username=request.session["user"])
         if user.is_superuser:
             normes=Norme.objects.all()
-            return render(request,"Admin/home/normes.html", context={"normes":normes})
+            notif = Notification.objects.filter(type=1).all()
+
+            notif2= Notification.objects.filter(type=1,vu=False).all()
+            nb = len(notif2)
+
+            context = {
+                "normes":normes,
+                "notif": notif,
+                "nb": nb
+            }
+            return render(request,"Admin/home/normes.html", context)
         else:
             return redirect('/home/')
 
@@ -1361,6 +1646,16 @@ def lois(request):
         user = User.objects.get(username=request.session["user"])
         if user.is_superuser:
             lois=Loi.objects.all()
-            return render(request,"Admin/home/lois.html", context={"lois":lois})
+            notif = Notification.objects.filter(type=1).all()
+
+            notif2= Notification.objects.filter(type=1,vu=False).all()
+            nb = len(notif2)
+
+            context = {
+                "lois":lois,
+                "notif": notif,
+                "nb": nb
+            }
+            return render(request,"Admin/home/lois.html", context)
         else:
             return redirect('/home/')

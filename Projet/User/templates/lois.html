@@ -26,15 +26,125 @@
 
   <div class="header__menu">
     <nav id="navbar" class="header__nav collapse">
-      <ul class="header__elenco">
+        <ul class="header__elenco">
+         <li class="header__el">
+           <div class="dropdown">
+          <a href="#" class="header__link"><i class="fa fa-bell" aria-hidden="true"></i></a><i style="font-size: 10px;color:red; font-weight:900;">{{nb}}</i>
+
+          <div class="dropdown-content" id = "notif" >
+
+
+{% for n in notif %}
+
+              {% if n.type == 2 %}
+
+              {% if n.vu %}
+           <a href="/norme/" class="header__link"  style=" margin: -20px; border-radius:10px; ">
+             <div class="col ml--2" >
+                    <div class="d-flex justify-content-between align-items-center" >
+                      <div>
+                        <h4 class="mb-0 text-sm">Nouvelle norme disponible.</h4>
+                      </div>
+                      <div class="text-right text-muted">
+                        <small>{{n.date}}</small>
+                      </div>
+                    </div>
+                    <p class="text-sm mb-0">{{n.norme.titre}} </p>
+                  </div>
+
+           </a>
+
+
+               {% else %}
+               <a href="/norme/{{n.id}}" class="header__link" style="background-color: #DBE4FF; margin: -20px; border-radius:10px; "  >
+             <div class="col ml--2" style="background-color: #DBE4FF;">
+                    <div class="d-flex justify-content-between align-items-center" >
+                      <div>
+                        <h4 class="mb-0 text-sm">Nouvelle norme disponible.</h4>
+                      </div>
+                      <div class="text-right text-muted">
+                        <small>{{n.date}}</small>
+                      </div>
+                    </div>
+                    <p class="text-sm mb-0">{{n.norme.titre}} </p>
+                  </div>
+
+           </a>
+
+              {% endif %}
+              {% else %}
+
+              {% if n.vu %}
+
+
+              <a href="/loi/" class="header__link"  style=" margin: -20px; border-radius:10px; ">
+             <div class="col ml--2" style="">
+                    <div class="d-flex justify-content-between align-items-center" >
+                      <div style="margin-bottom:-15px;">
+                        <h4 class="mb-0 text-sm">Nouvelle loi disponible.</h4>
+                      </div>
+                      <div class="text-right text-muted" style="margin-bottom:-10px;">
+                        <small>{{n.date}}</small>
+                      </div>
+                    </div>
+                    <p class="text-sm mb-0">{{n.loi.titre}} </p>
+                  </div>
+
+           </a>
+
+
+
+               {% else %}
+               <a href="/loi/{{n.id}}" class="header__link" style="background-color: #DBE4FF; margin: -20px; border-radius:10px; " >
+             <div class="col ml--2" >
+                    <div class="d-flex justify-content-between align-items-center" >
+                      <div>
+                        <h4 class="mb-0 text-sm">Nouvelle loi disponible.</h4>
+                      </div>
+                      <div class="text-right text-muted">
+                        <small>{{n.date}}</small>
+                      </div>
+                    </div>
+                    <p class="text-sm mb-0">{{n.loi.titre}} </p>
+                  </div>
+
+           </a>
+
+
+
+              {% endif %}
+
+              {% endif %}
+
+
+{% endfor %}
+
+          </div>
+
+          </div>
+        </li>
+
         <li class="header__el"><a href="/home/" class="header__link">Acceuil</a></li>
         <li class="header__el"><a href="/norme/" class="header__link">Normes</a></li>
         <li class="header__el"><a href="/loi/" class="header__link">Lois</a></li>
-        <li class="header__el"><a href="/historique/" class="header__link">Historique</a></li>
 
-        <li class="header__el "><a href="/logout/" class="header__link">Déconnexion</a></li>
+        <li class="header__el"><a href="/historique" class="header__link">Historique</a></li>
 
-        <li class="header__el header__el--blue"><a href="#" class="btn btn--white">{{ request.session.user }}</a></li>
+
+
+
+
+        <li class="header__el header__el--blue">
+        <div class="dropdown">
+          <a href="#" class="btn btn--white ">{{ request.user.username }}</a>
+          <div class="dropdown-content">
+           <a href="/logout/" class="header__link">Se déconnecter</a>
+          </div>
+        </div>
+
+
+        </li>
+
 
       </ul>
     </nav>

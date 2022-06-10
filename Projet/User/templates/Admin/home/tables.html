@@ -38,39 +38,48 @@
             <table class="table align-items-center table-flush">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col" class="sort" data-sort="name">Nom</th>
-                  <th scope="col" class="sort" data-sort="email">E-Mail</th>
-                  <th scope="col" class="sort" data-sort="secteur">Entreprise</th>
-                  <th scope="col" class="sort" data-sort="test">Numéro fiscale</th>
-                  <th scope="col">Payement</th>
+                  <th scope="col" class="sort" data-sort="name" style="text-align:center;">Nom</th>
+                  <th scope="col" class="sort" data-sort="email" style="text-align:center;">E-Mail</th>
+                  <th scope="col" class="sort" data-sort="secteur" style="text-align:center;">Entreprise</th>
+                  <th scope="col" class="sort" data-sort="test" style="text-align:center;">Numéro fiscale</th>
+                  <th scope="col" style="text-align:center;">Payement</th>
+                  <th scope="col" style="text-align:center;">Action</th>
 
                 </tr>
               </thead>
               <tbody class="list">
             {% for u in users %}
                <tr>
-                    <th scope="row">
+                    <th scope="row" style="text-align:center;">
                       {{ u.id_user.username }}
                     </th>
-                    <td>
+                    <td style="text-align:center;">
                       {{ u.id_user.email }}
                     </td>
-                    <td>
+                    <td style="text-align:center;">
                       {{ u.raison}}
                     </td>
-                    <td>
+                    <td style="text-align:center;">
                       {{ u.num_fisc }}
                     </td>
-                    <td>
+                    <td style="text-align:center;">
 
-                      {% if u.is_valid == true %}
-                      <i class="ni ni-check-bold text-success mr-3"></i> Validé
+                      {% if u.is_valid %}
+                      <i class="ni ni-check-bold text-success mr-3"></i>
 
                       {% else %}
 
 
                       {% endif %}
                     </td>
+
+                   <td style="text-align:center;">
+
+                       <a href="/valider/{{ u.id_user.username }}" style="text-align:center; color: green;"> Valider  </a> &nbsp;&nbsp;
+
+
+                       <a href="/delete/{{ u.id_user.username }}" style="text-align:center; color: red;"> Bloquer  </a>
+                   </td>
                   </tr>
 {% endfor %}
               </tbody>

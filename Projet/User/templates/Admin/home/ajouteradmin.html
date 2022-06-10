@@ -1,0 +1,226 @@
+{% extends 'Admin/layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block content %}
+
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fa fa-plus"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Ajout d'un admin</li>
+              </ol>
+            </nav>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+      <div class="row">
+        <div class="col-xl-2"></div>
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              <div class="modal-header"><span id="span1" class="is-active"></span></div>
+            </div>
+            <div class="card-body">
+             <div class="card-body px-lg-5 py-lg-5">
+
+
+              <form method="POST">
+
+                {% csrf_token %}
+
+
+                  <div class="inline-block">
+                    <label for="nom" >Username </label>
+                    <input class="input" type="text" id="nom"  >
+                  </div>
+
+                <div class="inline-block">
+                    <label for="email" >E-mail</label>
+                    <input class="input" type="email" id="email" >
+                  </div>
+                <span class="error" id="erroremail"></span>
+
+
+                  <div class="inline-block">
+                    <label for="mdp" >Mot de passe</label>
+                    <input class="input" type="password" id="mdp" >
+
+                  </div>
+                <span class="error" id="errormdp"></span>
+
+              </form>
+            </div>
+
+                <div class="card-footer">
+             <a class="btn-upload  is_showing " id="btn" type="submit" href="#">Ajouter</a>
+
+           </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2"></div>
+      </div>
+
+
+    {% include "Admin/includes/footer.html" %}
+
+  </div>
+
+ <script type="text/javascript"  src="https://apiv2.popupsmart.com/api/Bundle/383450" async></script>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+var faible=0;
+var username = document.getElementById("nom");
+var email = document.getElementById("email");
+var mdp = document.getElementById("mdp");
+
+$('#mdp').bind('change', function() {
+
+mdp= document.getElementById('mdp');
+str=mdp.value;
+
+if (str.match( /[0-9]/g) &&
+                    str.match( /[A-Z]/g) &&
+                    str.match(/[a-z]/g) &&
+                    str.match( /[^a-zA-Z\d]/g) &&
+                    str.length >= 10)
+               { msg = "";
+               mdp.classList.remove('false');
+                faible=0;}
+            else
+               {
+               mdp.classList.add('false');
+               msg = "<p class='error'><abbr title= 'Le mot de passe doit contenir Au moins 1 caractère majuscule. 1 caractère minuscule. 1 chiffre. 1 caractère spécial. Et au minimum 10 caractères. '> Mot de passe faible.</abbr></p>";
+                   faible=1; }
+    document.getElementById('errormdp').innerHTML=msg;
+
+});
+
+$('#nom').bind('change', function() {
+
+if( username.value == "") {
+         username.classList.add('false');
+         rep=1;
+    } else{ username.classList.remove('false'); }
+
+});
+
+
+
+$('#email').bind('change', function() {
+
+if( !email.value.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+         email.classList.add('false');
+         msg = "<p class='error'>Cet email n'est pas valide.</p>";
+                   faible=1;
+
+    } else{ email.classList.remove('false');
+     msg="";
+     faible=0;
+     }
+
+    document.getElementById('erroremail').innerHTML=msg;
+
+});
+
+
+
+  document.getElementById('btn').addEventListener('click',function(){
+
+
+    var rep=0;
+
+    if( username.value == "") {
+         username.classList.add('false');
+         rep=1;
+    } else{ username.classList.remove('false'); }
+
+    if( email.value == "") {
+          email.classList.add('false');
+          rep=1;
+    } else{email.classList.remove('false'); }
+    if( mdp.value == "") {
+          mdp.classList.add('false');
+          rep=1;
+    } else{mdp.classList.remove('false'); }
+    if (rep == 1) { return; }
+    if(faible == 1) {return; }
+    var data = new FormData();
+    csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+	data.append("csrfmiddlewaretoken", csrf_token);
+	data.append("username",username.value);
+	data.append("email", email.value);
+	data.append("mdp",mdp.value);
+
+	             $.ajax({
+					    type: 'post',
+						url: '/ajoutad/', // point to server-side URL
+						dataType: 'json', // what to expect back from server
+						data: data,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (response) { // display success response
+
+                         if (response.err == 0){
+
+                           alert( "Ajout réussi");
+
+                         }
+                         else {
+
+                         alert( response.erreur );
+
+                         }
+
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							                  var msg = '';
+
+                                  if (jqXHR.status === 0) {
+                                       msg = 'Not connect.\n Verify Network.';
+                                  } else if (jqXHR.status == 404) {
+                                       msg = 'Requested page not found. [404]';
+                                  } else if (jqXHR.status == 500) {
+                                       msg = 'Internal Server Error [500].';
+                                  } else if (exception === 'parsererror') {
+                                       msg = 'Requested JSON parse failed.';
+                                  } else if (exception === 'timeout') {
+                                       msg = 'Time out error.';
+                                  } else if (exception === 'abort') {
+                                       msg = 'Ajax request aborted.';
+                                  } else {
+                                       msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                  }
+					                   alert(msg);
+					    }
+					   });
+
+
+
+
+
+
+  });
+
+</script>
+
+
+{% endblock content %}
+
+
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}

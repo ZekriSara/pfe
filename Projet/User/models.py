@@ -7,6 +7,8 @@ from django.db import models
 
 
 # Create your models here.
+from django.utils import timezone
+
 
 class Client(models.Model):
     id_client= models.AutoField(primary_key=True)
@@ -198,3 +200,16 @@ class FileModel(models.Model):
     def __str__(self) -> str:
     
         return str(self.doc)
+
+
+class Notification(models.Model):
+    id= models.AutoField(primary_key=True)
+    type=models.IntegerField()
+    date=models.DateField(default=timezone.now)
+    vu=models.BooleanField(default=False)
+    user=models.ForeignKey(User,verbose_name=("Users"),on_delete=models.CASCADE,default=None,blank=True, null=True)
+    norme=models.ForeignKey(Norme,verbose_name=("Normes"),on_delete=models.CASCADE,default=None,blank=True, null=True)
+    loi=models.ForeignKey(Loi,verbose_name=("Lois"),on_delete=models.CASCADE,default=None,blank=True, null=True)
+
+    def __str__(self) -> str:
+        return str(self.id)
